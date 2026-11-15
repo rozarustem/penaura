@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foydalanuvchilar — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main"></main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script src="js/users-data.js"></script>
+<script src="js/audit-format.js"></script>
+<script>
+const U = UsersData, back = ["Foydalanuvchilar", "users.html"];
+const KIND = { adjustment: "Qo'lda qo'shildi", chapter_unlock: "Bob ochildi" };
+(async () => {
+  if (!getSession()) { location.replace("login.html"); return; }
+  let u = null;
+  try { u = await U.detail(new URLSearchParams(location.search).get("id")); }
+  catch (e) { if (!/topilmadi|Not found/i.test((e && e.message) || "")) { Admin.page({ title: "Ma'lumotni yuklab bo'lmadi", sub: (e && e.message) || "Server bilan aloqa yo'q.", back, sections: [] }); return; } }
+  if (!u) { Admin.page({ title: "Foydalanuvchi topilmadi", sub: "Bunday foydalanuvchi yo'q.", back, sections: [] }); return; }
+
+  const isPublic = u.roleKey === "reader" || u.roleKey === "writer";
+  const reload = () => setTimeout(() => location.reload(), 400);
+  const fail = e => alert((e && e.message) || "Amalni bajarib bo'lmadi.");
+  const blockActions = !isPublic ? [] : [u.blocked
+    ? { text: "Blokdan chiqarish", fn: async () => { try { await U.setBlocked(u.id, false); } catch (e) { return fail(e); } Admin.done("Blokdan chiqarildi: " + u.name); reload(); } }
+    : { text: "Bloklash", kind: "danger-o", fn: () => Admin.dialog({ title: "Foydalanuvchini bloklash", text: u.name + " tizimga kira olmaydi.", ok: "Bloklash", danger: true,
+        onOk: async () => { try { await U.setBlocked(u.id, true); } catch (e) { return fail(e); } Admin.done("Foydalanuvchi bloklandi: " + u.name); reload(); } }) }];
+  /* Rolni faqat direktor o'zgartira oladi va o'z rolini emas (backend ham shuni talab qiladi) */
+  const me = getSession();
+  const roleActions = (me.role === "direktor" && u.email !== me.email) ? [{ text: "Rolni o'zgartirish", fn: () => Admin.dialog({
+    title: "Rolni o'zgartirish",
+    text: u.name + " — hozirgi rol: " + u.role + ". Xodim roli (direktor, moliyachi, moderator, tahrirchi) berilsa, foydalanuvchi faqat admin panel orqali kira oladi, saytga o'quvchi yoki yozuvchi sifatida kira olmaydi.",
+    ok: "Saqlash",
+    fields: [{ label: "Yangi rol", options: Object.entries(U.ROLE), value: u.roleKey }],
+    onOk: async ([role]) => {
+      if (!role || role === u.roleKey) return;
+      try { await U.setRole(u.id, role); } catch (e) { return fail(e); }
+      Admin.done("Rol o'zgartirildi: " + u.name + " → " + (U.ROLE[role] || role)); reload();
+    } }) }] : [];
+  const actions = blockActions.concat(roleActions);
+
+  const sections = [
+    { type: "stats", items: [["Holat", u.blocked ? "Bloklangan" : "Faol", "", u.blocked ? "down" : "up"], ["Tanga", String(u.coins)],
+      ["Ro'yxatdan o'tgan", u.joined], ["Oxirgi kirish", u.lastSeen.slice(11) || "—", u.lastSeen.slice(0, 10)]] },
+    { type: "kv", title: "Shaxsiy ma'lumotlar", rows: [
+      ["To'liq ism", u.name], ["Rol", u.role], ["Telefon", u.phone], ["Email", u.email], ["Shahar", u.city],
+      u.roleKey === "writer" ? ["Kitoblari / she'rlari", u.booksCount + " / " + u.poemsCount] : ["Ochgan pullik boblari", String(u.unlocked)],
+      ["Kuzatuvchilar", String(u.followers)], ["Ro'yxatdan o'tgan sana", u.joined], ["Oxirgi kirish", u.lastSeen]] },
+    { type: "table", title: "Tanga harakatlari", size: 6,
+      cols: [{ h: "Vaqt", mono: 1 }, "Turi", { h: "Miqdor", mono: 1 }, { h: "Qoldiq", mono: 1 }, "Izoh"],
+      rows: u.transactions.map(t => [AuditFormat.when(t.created_at), KIND[t.kind] || t.kind, (t.kind === "adjustment" ? "+" : "−") + t.amount, String(t.balance_after), t.reference || "—"]) }
+  ];
+  if (getSession().role === "direktor") sections.push({ type: "table", title: "Admin amallari (audit)", search: true, size: 8,
+    cols: [{ h: "Vaqt", mono: 1 }, "Kim", "Amal"], rows: u.audit.map(a => [AuditFormat.when(a.created_at), a.actor || "Tizim", AuditFormat.text(a)]) });
+
+  Admin.page({ title: u.name, sub: u.role + " · ID " + u.id, back, actions, sections });
+})();
+</script>
+</body>
+</html>

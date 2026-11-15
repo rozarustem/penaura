@@ -1,0 +1,7 @@
+/* Sign-up page styles */
+
+/* Shartlarga rozilik berilmaguncha tugma o'chiq */
+.signup-page .btn-auth-submit:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}

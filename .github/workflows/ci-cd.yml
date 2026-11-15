@@ -1,0 +1,102 @@
+name: CI/CD
+
+# main (yoki master) ga push bo'lsa: testlar -> serverga avtomatik deploy.
+# Pull request ochilsa: faqat testlar ishlaydi (deploy qilinmaydi).
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+# Bir vaqtda ikkita deploy ketma-ket emas, navbat bilan bajarilsin
+concurrency:
+  group: ci-cd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Testlar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Kutubxonalarni o'rnatish
+        run: pip install -r backend/requirements.txt
+
+      - name: Django testlari
+        working-directory: backend
+        env:
+          SECRET_KEY: ci-test-secret-key
+          DEBUG: "True"
+          PAYMENTS_MOCK: "True"
+        run: python manage.py test
+
+      - name: Migratsiyalar modellarga mosligini tekshirish
+        working-directory: backend
+        env:
+          SECRET_KEY: ci-test-secret-key
+          DEBUG: "True"
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: JavaScript sintaksisini tekshirish
+        run: |
+          fail=0
+          for f in frontend/js/*.js admin/js/*.js; do
+            node --check "$f" || fail=1
+          done
+          exit $fail
+
+  deploy:
+    name: Serverga deploy
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH ulanishini tayyorlash
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          # SSH_KEY ikki xil yozilishi mumkin:
+          #  1) maxfiy kalitning o'zi (-----BEGIN ... KEY----- bilan), yoki
+          #  2) bitta qatorli base64 (serverda: base64 -w0 ~/.ssh/github_deploy). Bu variant nusxalashda buzilmaydi.
+          if printf '%s' "$SSH_KEY" | grep -q 'BEGIN'; then
+            printf '%s\n' "$SSH_KEY" | tr -d '\r' | sed 's/[[:space:]]*$//' | sed '/^$/d' > ~/.ssh/id_ed25519
+          else
+            printf '%s' "$SSH_KEY" | tr -d '[:space:]' | base64 -d > ~/.ssh/id_ed25519 || true
+          fi
+          # Kalit fayli albatta yangi qator bilan tugashi kerak
+          if [ -n "$(tail -c1 ~/.ssh/id_ed25519)" ]; then printf '\n' >> ~/.ssh/id_ed25519; fi
+          chmod 600 ~/.ssh/id_ed25519
+          if ! ssh-keygen -y -f ~/.ssh/id_ed25519 > /dev/null 2>&1; then
+            echo "::error::SSH_KEY secret noto'g'ri formatda. Serverda 'base64 -w0 ~/.ssh/github_deploy' natijasini SSH_KEY ga qayta yozing."
+            exit 1
+          fi
+          ssh-keyscan -T 15 -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Serverda yangilash va qayta ishga tushirish
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          ssh -o BatchMode=yes -o ConnectTimeout=20 "$SSH_USER@$SSH_HOST" 'set -e
+            cd ~/penaura
+            git pull --ff-only
+            docker compose -f docker-compose.prod.yml up -d --build
+            docker image prune -f'
+
+      - name: Sayt ishlayotganini tekshirish
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          curl -fsS --retry 12 --retry-delay 10 --retry-connrefused \
+            "$SITE_URL/api/books/" > /dev/null

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foydalanuvchilar — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main"></main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script src="js/users-data.js"></script>
+<script>
+const B = Admin.B, U = UsersData, idOf = new WeakMap();
+const badge = id => U.isBlocked(id) ? B("Bloklangan", "err") : B("Faol", "ok");
+const view = id => { location.href = "user.html?id=" + encodeURIComponent(id); };
+const fail = e => alert((e && e.message) || "Amalni bajarib bo'lmadi.");
+
+const act = r => {
+  const id = idOf.get(r), btns = [{ text: "Ko'rish", kind: "primary", fn: () => view(id) }];
+  if (r[1] !== "O'quvchi" && r[1] !== "Yozuvchi") return { btns };   /* xodimlarni bloklab bo'lmaydi */
+  if (!U.isBlocked(id)) btns.push({ text: "Bloklash", kind: "danger-o", fn: (row, d) => Admin.dialog({
+    title: "Foydalanuvchini bloklash", text: row[0] + " tizimga kira olmaydi.", ok: "Bloklash", danger: true,
+    onOk: async () => { try { await U.setBlocked(id, true); } catch (e) { return fail(e); } row[6] = badge(id); Admin.done("Foydalanuvchi bloklandi: " + row[0]); d(); } }) });
+  else btns.push({ text: "Blokdan chiqarish", fn: async (row, d) => { try { await U.setBlocked(id, false); } catch (e) { return fail(e); } row[6] = badge(id); Admin.done("Blokdan chiqarildi: " + row[0]); d(); } });
+  return { btns };
+};
+
+(async () => {
+  if (!getSession()) { location.replace("login.html"); return; }
+  try { await U.load(); } catch (e) {
+    Admin.page({ title: "Ma'lumotni yuklab bo'lmadi", sub: (e && e.message) || "Server bilan aloqa yo'q. Backend ishlayotganini tekshiring.", sections: [] });
+    return;
+  }
+  const rows = U.all().map(u => {
+    const r = [u.name, u.role, u.phone, u.email, String(u.coins), u.lastSeen, badge(u.id), act];
+    idOf.set(r, u.id); return r;
+  });
+  const s = U.stats(), diff = (s.joined_today || 0) - (s.joined_yesterday || 0);
+  Admin.page({ title: "Foydalanuvchilar", sub: "Yozuvchilar va o'quvchilar. Qatorni bossangiz, foydalanuvchining ma'lumotlari, tanga harakatlari va admin amallari ochiladi.", sections: [
+    { type: "stats", items: [["Yozuvchilar", String(s.writers || 0)], ["O'quvchilar", String(s.readers || 0)], ["Bloklangan", String(s.blocked || 0)],
+      ["Bugun qo'shilgan", String(s.joined_today || 0), (diff >= 0 ? "+" : "−") + Math.abs(diff) + " kechagiga nisbatan", diff >= 0 ? "up" : "down"]] },
+    { type: "table", title: "Foydalanuvchilar", search: true, size: 10, onRow: r => view(idOf.get(r)),
+      cols: ["Ism", "Rol", { h: "Telefon", mono: 1 }, { h: "Email", mono: 1 }, { h: "Tanga", mono: 1 }, { h: "Oxirgi kirish", mono: 1 }, "Holat", "Amal"], rows }
+  ] });
+})();
+</script>
+</body>
+</html>

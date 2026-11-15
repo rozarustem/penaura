@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coin Checkout — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/checkout.css">
+</head>
+<body class="checkout-page">
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo"><span class="logo-mark">P</span> Penaura</div>
+    <nav class="links">
+      <a href="index.html">Discover</a>
+      <a href="fiction.html">Fiction</a>
+      <a href="poem.html">Poetry</a>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+    </nav>
+    <div class="nav-right">
+      <span class="search-link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Search</span>
+      <button class="btn-signin">Sign In</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap checkout-main">
+  <a class="checkout-back" href="coins.html">&larr; Back to coin packages</a>
+  <div class="checkout-heading">
+    <div class="eyebrow">COIN CHECKOUT</div>
+    <h1>Review your purchase</h1>
+    <p>Choose a payment method for your Penaura coins.</p>
+  </div>
+
+  <div class="checkout-layout">
+    <section class="checkout-panel">
+      <h2>Payment method</h2>
+      <form id="payment-form">
+        <div class="payment-methods">
+          <label class="payment-method">
+            <input type="radio" name="payment-method" value="mock" checked>
+            <span class="payment-brand">DEMO</span>
+            <span class="payment-copy"><strong>Demo payment</strong><small>Prototype: no real money is charged</small></span>
+          </label>
+          <label class="payment-method">
+            <input type="radio" name="payment-method" value="Click">
+            <span class="payment-brand click-brand">CLICK</span>
+            <span class="payment-copy"><strong>Click</strong><small>Uzbekistan payment service</small></span>
+          </label>
+          <label class="payment-method">
+            <input type="radio" name="payment-method" value="Payme">
+            <span class="payment-brand payme-brand">PAYME</span>
+            <span class="payment-copy"><strong>Payme</strong><small>Uzbekistan payment service</small></span>
+          </label>
+        </div>
+        <p class="payment-note">Demo payment adds coins instantly and charges nothing. Click redirects to the real payment page once it is configured.</p>
+        <p id="checkout-status" class="checkout-status" role="status" aria-live="polite" hidden></p>
+        <button class="checkout-submit" type="submit">Pay</button>
+      </form>
+    </section>
+
+    <aside class="checkout-summary">
+      <h2>Order summary</h2>
+      <div class="checkout-coin-row">
+        <div class="checkout-coin-mark" aria-hidden="true">P</div>
+        <div><strong id="checkout-coins">-- coins</strong><span id="checkout-bonus"></span></div>
+      </div>
+      <dl>
+        <div><dt>Coins</dt><dd id="summary-coins">--</dd></div>
+        <div id="summary-bonus-row" hidden><dt>Bonus coins</dt><dd id="summary-bonus"></dd></div>
+        <div><dt>Total coins</dt><dd id="summary-total"></dd></div>
+        <div class="summary-total"><dt>Total due</dt><dd id="summary-price">--</dd></div>
+      </dl>
+      <p class="checkout-safety">Your balance will only change after a confirmed payment.</p>
+    </aside>
+  </div>
+</main>
+
+<footer class="checkout-footer">
+  <span>&copy; 2026 Penaura</span>
+  <a href="coins.html">Coin packages</a>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/api-client.js"></script>
+<script src="js/dom-utils.js"></script>
+<script src="js/auth-nav.js"></script>
+<script src="js/coin-checkout.js"></script>
+</body>
+</html>

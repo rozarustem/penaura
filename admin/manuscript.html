@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asar — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main"></main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script src="js/manuscripts.js"></script>
+<script>
+const M = Manuscripts, B = Admin.B, q = new URLSearchParams(location.search);
+M.boot(() => {
+const kind = q.get("kind") === "poem" ? "poem" : "book", id = q.get("id"), w = M.get(kind, id);
+const isMod = (M.session().role === "moderator"), back = isMod ? ["Kitoblar", "books.html"] : ["Tahririyat", "editorial.html"], reload = () => location.reload();
+
+if (!w) {
+  Admin.page({ title: "Asar topilmadi", sub: "Bunday asar yo'q yoki hali tahrirchiga yuborilmagan.", back, sections: [] });
+} else {
+  const s = M.summary(w), mine = M.isMine(w), other = !!w.lock && !mine;
+  const open = c => { location.href = "manuscript-chapter.html?kind=" + kind + "&id=" + encodeURIComponent(id) + "&chapter=" + encodeURIComponent(c.id); };
+  const ready = w.chapters.filter(c => c.status === "editing" && c.edited);
+
+  const actions = [];
+  if (w.hidden) actions.push({ text: "Qayta ko'rsatish", kind: "primary", fn: () => M.unhide(kind, id, reload) });
+  else {
+    if (s.queue > 0 && !w.lock && !isMod) actions.push({ text: "Olib qo'yish", kind: "primary", fn: () => M.startEdit(kind, id, reload) });
+    if (mine) {
+      actions.push({ text: "Qo'yib yuborish", fn: () => M.stopEdit(kind, id, reload) });
+      if (ready.length > 1) actions.push({ text: "Tayyor boblarni saytga chiqarish (" + ready.length + ")", kind: "primary", fn: () => Admin.dialog({
+        title: "Tayyor boblarni saytga chiqarish", text: ready.length + " ta tahrirlangan bob saytga chiqadi:", list: ready.map(c => c.title), ok: "Saytga chiqarish",
+        onOk: () => M.publishReady(kind, id, ready.map(c => c.id), reload) }) });
+    }
+    if (other && M.isDirector()) actions.push({ text: "Qo'lga olish", kind: "danger-o", fn: () => M.startEdit(kind, id, reload) });
+    if (s.live > 0) actions.push({ text: "Asarni yashirish", kind: "danger-o", fn: () => M.askHide(kind, id, reload) });
+  }
+
+  const hint = w.hidden ? "Sabab: " + w.hiddenReason : other ? "Boshqa tahrirchi band qilgan" : s.queue && !w.lock ? "Boshlash uchun «Olib qo'yish»ni bosing" : mine ? "Siz tahrirlayapsiz" : "";
+  const kindText = kind === "poem" ? "She'r" : "Kitob";
+
+  Admin.page({
+    title: w.title, sub: kindText + " · " + w.author + " · " + w.genre, back, actions,
+    sections: [
+      { type: "stats", items: [
+        ["Holat", M.SHORT[s.key], hint, w.hidden || other ? "down" : ""],
+        ["Boblar (saytda / jami)", s.live + " / " + s.total],
+        ["Navbatda", String(s.queue), s.returned ? s.returned + " ta yozuvchida" : ""],
+        ["Mas'ul tahrirchi", w.lock ? w.lock.by : "Bo'sh", w.lock ? w.lock.at : ""]] },
+      { type: "table", title: kind === "poem" ? "She'r" : "Boblar", onRow: r => open(r.ch), size: 12,
+        cols: [{ h: "№", mono: 1 }, "Nomi", { h: "So'zlar", mono: 1 }, "Kirish", "Holat", "Tahrir", "Amal"],
+        rows: w.chapters.map((c, i) => {
+          const btns = [], editable = mine && c.status === "editing";
+          if (c.status === "submitted") btns.push(mine ? { text: "Tahrirga olish", kind: "primary", fn: () => M.startChapter(kind, id, c.id).then(reload, M.fail) } : { text: "Ko'rish", fn: () => open(c) });
+          else if (editable) btns.push({ text: "Tahrirlash", kind: "primary", fn: () => open(c) },
+            { text: "Saytga chiqarish", fn: () => M.askPublish(kind, id, c.id, reload) },
+            { text: "Qaytarish", kind: "danger-o", fn: () => M.askGiveBack(kind, id, c.id, reload) });
+          else if (c.status === "published" && mine) btns.push({ text: "Ko'rish", fn: () => open(c) }, { text: "Tahrirga qaytarish", kind: "danger-o", fn: () => M.askUnpublish(kind, id, c.id, reload) });
+          else btns.push({ text: "Ko'rish", fn: () => open(c) });
+          const row = [String(i + 1), c.title, String(M.words(c.content)), c.isPremium ? "Premium" : "Bepul", M.badge(c.status),
+            c.status === "editing" ? (c.edited ? B("Tahrirlangan", "ok") : B("Tahrirlanmagan", "wait")) : { text: "—" }, { btns }];
+          row.ch = c; return row;
+        }) }
+    ]
+  });
+}
+});
+</script>
+</body>
+</html>

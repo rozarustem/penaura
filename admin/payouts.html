@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yozuvchilarga to'lov — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main"></main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script>
+const B = Admin.B;
+const num = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const day = v => v ? new Date(v).toLocaleDateString("uz-UZ") : "—";
+const BADGE = { pending: ["Yangi", "wait"], paid: ["Tasdiqlandi", "ok"], rejected: ["Rad etildi", "err"] };
+(async () => {
+  let data = null, err = "";
+  try { data = await AdminApi.request("/auth/admin/withdrawals/"); } catch (e) { err = e.message; }
+  Admin.page({ title: "Yozuvchilarga to'lov", sub: err ? "Ma'lumotni yuklab bo'lmadi: " + err : "To'lov so'rovlari. " + num(data.director_limit_som) + " so'mdan yuqori summani faqat direktor tasdiqlaydi.", sections: s => {
+    const dir = s.role === "direktor", limit = data ? data.director_limit_som : 0, ids = new WeakMap();
+    const results = data ? data.results : [];
+    const mk = w => { const row = [w.writer, num(w.amount_som) + " so'm", "•••• " + w.card_last4, day(w.created_at), B(...BADGE[w.status]), act]; ids.set(row, w); return row; };
+    const send = (row, body, okMsg, draw) => AdminApi.request("/auth/admin/withdrawals/" + ids.get(row).id + "/", { method: "POST", body })
+      .then(w => { const upd = Object.assign(ids.get(row), w); row[4] = B(...BADGE[upd.status]); Admin.done(okMsg + ": " + row[0] + ", " + row[1]); draw(); })
+      .catch(e => Admin.done("Xato: " + e.message));
+    function act(r) {
+      const w = ids.get(r);
+      if (w.status !== "pending") return { text: w.status === "rejected" && w.reject_reason ? w.reject_reason : "—" };
+      if (w.amount_som > limit && !dir) return { text: "Direktor tasdig'i kerak" };
+      return { btns: [
+        { text: "Tasdiqlash", kind: "primary", fn: (row, draw) => Admin.dialog({ title: "To'lovni tasdiqlash", text: row[0] + " ga " + row[1] + " o'tkaziladi (demo).", ok: "Tasdiqlash",
+          onOk: () => send(row, { action: "approve" }, "To'lov tasdiqlandi", draw) }) },
+        { text: "Rad etish", kind: "danger-o", fn: (row, draw) => Admin.dialog({ title: "To'lovni rad etish", text: row[0] + " · " + row[1], danger: true, ok: "Rad etish",
+          fields: [{ label: "Sabab (yozuvchiga ko'rsatiladi)", multiline: true, required: true }],
+          onOk: v => send(row, { action: "reject", reason: v[0] }, "To'lov rad etildi", draw) }) }] };
+    }
+    const pend = results.filter(w => w.status === "pending");
+    const last = results.find(w => w.status === "paid");
+    return [
+      { type: "stats", items: [["Kutilayotgan so'rovlar", String(pend.length), num(pend.reduce((a, w) => a + w.amount_som, 0)) + " so'm"], ["Jami so'rovlar", String(results.length)], ["Oxirgi to'lov", last ? day(last.processed_at) : "—"], ["Direktor chegarasi", data ? num(limit) + " so'm" : "—"]] },
+      { type: "table", title: "To'lov so'rovlari", cols: ["Yozuvchi", { h: "Summa", mono: 1 }, { h: "Rekvizit", mono: 1 }, { h: "Sana", mono: 1 }, "Holat", "Amal"], rows: results.map(mk) }
+    ];
+  } });
+})();
+</script>
+</body>
+</html>

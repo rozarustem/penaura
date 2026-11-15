@@ -1,0 +1,26 @@
+# Maxfiy sozlamalar
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# Ma'lumotlar bazasi va zaxira nusxalar
+*.sqlite3
+*.sqlite3.bak
+*.bak
+*.sql
+*.dump
+
+# Foydalanuvchilar yuklagan fayllar va yig'ilgan static
+backend/media/
+backend/staticfiles/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Muharrir sozlamalari
+.vscode/
+.idea/

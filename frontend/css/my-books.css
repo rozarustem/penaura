@@ -1,0 +1,119 @@
+.my-books-page .book-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+	gap: 1rem;
+	padding-bottom: 2rem;
+}
+
+.my-books-page .book-card {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	padding: 0.75rem;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	background: var(--card-bg);
+	color: var(--espresso);
+	text-decoration: none;
+	transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.my-books-page .book-card:hover {
+	transform: translateY(-2px);
+	border-color: var(--terracotta-soft);
+}
+
+.my-books-page .book-card:focus-visible {
+	outline: 2px solid var(--terracotta);
+	outline-offset: 2px;
+}
+
+.my-books-page .book-cover {
+	position: relative;
+	display: flex;
+	width: 100%;
+	aspect-ratio: 2 / 3;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	border-radius: var(--radius);
+	background: var(--placeholder);
+}
+
+.my-books-page .book-cover-image {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.my-books-page .book-cover-placeholder {
+	color: var(--espresso-soft);
+	font-family: var(--font-mono);
+	font-size: 0.72rem;
+}
+
+.my-books-page .status-badge {
+	position: absolute;
+	z-index: 1;
+	top: 0.45rem;
+	left: 0.45rem;
+	padding: 0.2rem 0.4rem;
+	border-radius: var(--radius);
+	background: #DCEBD9;
+	color: #3C6B37;
+	font-family: var(--font-mono);
+	font-size: 0.62rem;
+}
+
+.my-books-page .status-badge.draft {
+	background: var(--cream);
+	color: var(--espresso-soft);
+}
+
+.my-books-page .book-genre {
+	margin-top: 0.75rem;
+	color: var(--terracotta);
+	font-family: var(--font-mono);
+	font-size: 0.65rem;
+}
+
+.my-books-page .book-card h3 {
+	margin: 0.3rem 0;
+	font-family: var(--font-display);
+	font-size: 1rem;
+	overflow-wrap: anywhere;
+}
+
+.my-books-page .book-meta {
+	margin-top: auto;
+	padding-top: 0.35rem;
+	color: var(--espresso-soft);
+	font-family: var(--font-mono);
+	font-size: 0.68rem;
+}
+
+.my-books-page .book-manage-btn {
+	margin-top: 0.65rem;
+	color: var(--terracotta);
+	font-family: var(--font-mono);
+	font-size: 0.68rem;
+}
+
+.my-books-page .new-book-card .book-cover {
+	border: 1px dashed var(--terracotta-soft);
+}
+
+.my-books-page .new-book-card .plus {
+	color: var(--terracotta);
+	font-family: var(--font-display);
+	font-size: 2rem;
+}
+
+@media (max-width: 480px) {
+	.my-books-page .book-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.65rem;
+	}
+}

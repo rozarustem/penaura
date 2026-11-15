@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tahririyat — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main"></main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script src="js/manuscripts.js"></script>
+<script>
+/* Oqim: yozuvchi bobni tahrirchiga yuboradi (Yangi) → tahrirchi asarni "olib qo'yadi" (bir vaqtda faqat bitta tahrirchi)
+   → har bir bobni alohida tahrirlaydi (Tahrirda) → saytga chiqaradi (Platformada) yoki yozuvchiga qaytaradi.
+   Holat har bir bobda alohida: yangi bob nashr etilgan kitobda ham avval tahrirchiga tushadi. */
+const M = Manuscripts, ref = new WeakMap();
+const label = r => r[7].badge[0];
+const openMs = f => { location.href = "manuscript.html?kind=" + f.kind + "&id=" + encodeURIComponent(f.id); };
+
+const writersSec = { type: "table", title: "Yozuvchilar va ularning asarlari", search: true, size: 6,
+  cols: ["Yozuvchi", "Asarlari (holati bilan)", { h: "Jami", mono: 1 }, { h: "Saytda", mono: 1 }], rows: [] };
+
+function build(w) {
+  const s = M.summary(w);
+  return [w.title, w.author, w.genre, s.live + " / " + s.total, String(s.queue), w.lock ? w.lock.by : "—", s.sent.slice(0, 16), M.badge(s.key), act];
+}
+const mansSec = { type: "table", title: "Yozuvchilardan kelgan asarlar", search: true, size: 8, rows: [], onRow: r => openMs(ref.get(r)),
+  cols: ["Asar", "Muallif", "Janr", { h: "Boblar (saytda / jami)", mono: 1 }, { h: "Navbatda", mono: 1 }, "Mas'ul", { h: "Yuborilgan", mono: 1 }, "Holat", "Amal"] };
+
+const refresh = (row, draw) => {
+  const f = ref.get(row), w = M.get(f.kind, f.id);
+  if (w) row.splice(0, row.length, ...build(w));
+  draw(); if (writersSec.redraw) writersSec.redraw();
+};
+
+function act(r) {
+  const f = ref.get(r), w = M.get(f.kind, f.id); if (!w) return { text: "—" };
+  const s = M.summary(w), mine = M.isMine(w), btns = [];
+  const reload = (row, d) => () => refresh(row, d);
+  if (s.queue > 0 && !w.lock) btns.push({ text: "Olib qo'yish", kind: "primary", fn: () => M.startEdit(f.kind, f.id, () => openMs(f)) });
+  else if (mine) {
+    btns.push({ text: "Tahrirlash", kind: "primary", fn: () => openMs(f) });
+    btns.push({ text: "Qo'yib yuborish", fn: (row, d) => M.stopEdit(f.kind, f.id, reload(row, d)) });
+  } else {
+    btns.push({ text: "Ko'rish", fn: () => openMs(f) });
+    if (w.lock && M.isDirector()) btns.push({ text: "Qo'lga olish", kind: "danger-o", fn: () => M.startEdit(f.kind, f.id, () => openMs(f)) });
+  }
+  return { btns };
+}
+
+M.boot(async () => {
+/* Tanlangan asarlar va oy muallifi — serverdagi haqiqiy ma'lumotlar */
+let showcase = { books: [], writers: [] };
+try { showcase = await AdminApi.request("/editorial/showcase/"); } catch (e) { /* ro'yxat bo'sh qoladi */ }
+const num = n => String(n || 0).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const post = (path, body) => AdminApi.request(path, { method: "POST", body });
+
+const all = M.works().map(w => ({ w, s: M.summary(w) }))
+  .sort((a, b) => (b.s.queue > 0) - (a.s.queue > 0) || (b.s.sent > a.s.sent ? 1 : b.s.sent < a.s.sent ? -1 : 0));
+all.forEach(({ w }) => { const row = build(w); ref.set(row, { kind: w.kind, id: w.id }); mansSec.rows.push(row); });
+
+[...new Set(all.map(x => x.w.author))].forEach(name => {
+  const mine = () => mansSec.rows.filter(r => r[1] === name);
+  writersSec.rows.push([name, () => mine().map(r => r[0] + " (" + label(r) + ")").join(" · "), () => String(mine().length),
+    () => String(mine().filter(r => label(r) === "Platformada").length)]);
+});
+
+Admin.page({ title: "Tahririyat", sub: all.length
+  ? "Yozuvchilar bobni avval tahrirchiga yuboradi. Tahrirchi tahrirlab, saytga o'zi chiqaradi. O'zgarishlar «Nashr qilish» bosilgandan keyin saytda ko'rinadi."
+  : "Hozircha asar yo'q. Agar platformada asarlar bo'lsa, admin va platforma bitta saytda (bitta manzilda) ochilganini tekshiring.", sections: [
+  mansSec,
+  writersSec,
+  { type: "table", title: "Tanlangan asarlar", search: true, size: 8, cols: ["Kitob", "Muallif", "Janr", { h: "O'qishlar", mono: 1 }, "Tanlangan"],
+    rows: showcase.books.map(b => [b.title, b.author, b.genre, num(b.views),
+      { toggle: b.is_featured, what: "Tanlangan asar «" + b.title + "»", save: v => post("/editorial/books/" + b.id + "/featured/", { featured: v }) }]) },
+  { type: "table", title: "Oy muallifi (Author Spotlight)", search: true, size: 8, cols: ["Muallif", { h: "Asarlar", mono: 1 }, { h: "Kuzatuvchilar", mono: 1 }, { h: "O'qishlar", mono: 1 }, "Spotlight"],
+    rows: showcase.writers.map(w => [w.name, num(w.works), num(w.followers), num(w.reads),
+      { toggle: w.is_spotlight, what: "Spotlight: " + w.name, save: v => post("/editorial/writers/" + w.id + "/spotlight/", { spotlight: v }).then(() => setTimeout(() => location.reload(), 700)) }]) }
+] });
+});
+</script>
+</body>
+</html>

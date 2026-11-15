@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kirish — Penaura boshqaruv paneli</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<main class="auth">
+  <div class="brand">Penaura<small>Boshqaruv paneli</small></div>
+  <form class="card" id="login-form" novalidate>
+    <h1 style="font-size:24px">Kirish</h1>
+    <label class="field">Email
+      <input type="email" id="email" autocomplete="username" placeholder="moliya@penaura.uz">
+    </label>
+    <label class="field">Parol
+      <input type="password" id="password" autocomplete="current-password" placeholder="••••••••">
+    </label>
+    <p class="err" id="err" role="alert"></p>
+    <button class="btn btn-primary" type="submit">Kirish</button>
+    <p class="note">To'lovni tasdiqlash va kursni o'zgartirish uchun SMS orqali ikki bosqichli tasdiq so'raladi.</p>
+  </form>
+</main>
+<script src="js/roles.js"></script>
+<script>
+  const s = getSession();
+  if (s && ROLES[s.role]) location.replace(ROLES[s.role].home);
+  document.getElementById("login-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const pass = document.getElementById("password").value;
+    const err = document.getElementById("err");
+    if (!email || !pass) { err.textContent = "Email va parolni kiriting."; return; }
+    if (!/^\S+@\S+\.\S+$/.test(email)) { err.textContent = "Email manzili noto'g'ri yozilgan."; return; }
+    try {
+      const result = await AdminApi.request("/auth/admin-login/", {
+        method: "POST", public: true, body: { email: email, password: pass }
+      });
+      const session = setSession(result);
+      location.href = ROLES[session.role].home;
+    } catch (error) {
+      err.textContent = error.message;
+    }
+  });
+</script>
+</body>
+</html>

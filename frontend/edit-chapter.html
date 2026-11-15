@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Chapter — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/edit-chapter.css">
+
+<body class="edit-chapter-page">
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+    <nav class="links">
+      <a href="index.html#discover">Discover</a>
+      <a href="fiction.html">Fiction</a>
+      <a href="poem.html">Poetry</a>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+    </nav>
+    <div class="nav-right">
+      <span class="search-link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Search</span>
+      <button class="btn-signin">Sign In</button>
+    </div>
+  </div>
+</header>
+
+<section class="page-hero" style="border-top:none; padding-bottom: 1rem;">
+  <div class="wrap">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <a class="breadcrumb" id="chapter-breadcrumb" href="manage-book.html">&larr; Back to Book</a>
+      <div id="save-status-indicator" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--espresso-soft); display:flex; align-items:center; gap:0.4rem;">
+        <span id="save-icon">●</span> <span id="save-text">Ready</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap editor-layout">
+  <div>
+    <div id="chapter-not-found" style="display:none; padding:2rem; background:var(--card-bg); border-radius:var(--radius); border:1px dashed var(--line); margin-bottom:1.5rem; text-align:center;">
+      <h3 style="font-family:var(--font-display);">Bob topilmadi</h3>
+      <p style="color:var(--espresso-soft); margin-bottom:1rem;">Bunday nomli kitob yoki bob topilmadi.</p>
+      <a href="my-books.html" class="btn-primary" style="display:inline-flex; text-decoration:none;">&larr; Mening Kitoblarim</a>
+    </div>
+
+    <div id="editor-main-section">
+      <input class="title-input" id="chapter-title-input" type="text" placeholder="Chapter Title (e.g. The Departure)" value="">
+
+      <div class="editor-toolbar">
+        <button type="button" data-cmd="bold" title="Bold"><b>B</b></button>
+        <button type="button" data-cmd="italic" title="Italic"><i>I</i></button>
+        <button type="button" data-cmd="formatBlock" data-val="h3" title="Heading"><b>H</b></button>
+        <button type="button" data-cmd="formatBlock" data-val="blockquote" title="Quote">&rdquo;</button>
+        <button type="button" data-cmd="insertUnorderedList" title="List">&bull;</button>
+        <div style="flex:1;"></div>
+        <input type="file" id="editor-file-input" accept=".docx,.doc,.txt,.md" style="display:none;" />
+        <button type="button" id="btn-import-file-editor" title="Word (.docx) yoki Matn faylini yuklash" style="width:auto; padding:0 0.7rem; font-family:var(--font-mono, monospace); font-size:0.75rem; display:inline-flex; align-items:center; gap:4px; border:1px solid var(--line, #E4DDD0); background:var(--cream, #FAF8F4); border-radius:var(--radius, 4px);">📄 Import Docs</button>
+        <button type="button" id="btn-import-gdocs-editor" title="Google Docs havolasidan import qilish" style="width:auto; padding:0 0.7rem; font-family:var(--font-mono, monospace); font-size:0.75rem; display:inline-flex; align-items:center; gap:4px; border:1px solid var(--line, #E4DDD0); background:var(--cream, #FAF8F4); border-radius:var(--radius, 4px);">🌐 Google Docs</button>
+      </div>
+      <div class="editor-body" id="chapter-editor-body" contenteditable="true" style="outline:none;">
+        <p>Start writing, or paste in your chapter text here...</p>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="sidebar-box">
+      <h3>Chapter Info</h3>
+      <div class="sidebar-row"><span>Chapter</span><strong id="stat-chapter-num">1 of 1</strong></div>
+      <div class="sidebar-row"><span>Word count</span><strong id="stat-word-count">0 words</strong></div>
+      <div class="sidebar-row"><span>Last saved</span><strong id="stat-last-saved">Never</strong></div>
+    </div>
+
+    <div class="sidebar-box">
+      <h3>Access Type</h3>
+      <div class="radio-row" style="margin-bottom:1rem;">
+        <label class="radio-option">
+          <input type="radio" id="access-free" name="ch-access" value="free" checked>
+          📖 Free
+        </label>
+        <label class="radio-option">
+          <input type="radio" id="access-premium" name="ch-access" value="premium">
+          ⭐ Premium
+        </label>
+      </div>
+
+      <h3>Publishing</h3>
+      <div id="chapter-status" class="chapter-status" role="status" hidden>
+        <strong id="chapter-status-label"></strong>
+        <p id="chapter-status-note"></p>
+      </div>
+      <div class="radio-row">
+        <label class="radio-option">
+          <input type="radio" id="pub-status-draft" name="pub-status" value="draft" checked>
+          Draft
+        </label>
+        <label class="radio-option">
+          <input type="radio" id="pub-status-published" name="pub-status" value="published">
+          Published
+        </label>
+      </div>
+      <button type="button" class="btn-publish" id="btn-publish-chapter">Publish Chapter</button>
+      <button type="button" class="btn-save-draft" id="btn-save-draft">Save Draft</button>
+    </div>
+  </div>
+</div>
+
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+      <p>A home for writers and the readers who love them.</p>
+      <div class="social-row">
+        <span>Fb</span><span>Tw</span><span>Ig</span><span>Yt</span>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>DISCOVER</h4>
+      <a href="fiction.html">Fiction</a><a href="poem.html">Poetry</a><a href="index.html#discover">Essays</a><a href="index.html#discover">Non-fiction</a>
+    </div>
+    <div class="footer-col">
+      <h4>WRITERS</h4>
+      <a href="upload.html">Start Writing</a><a href="blog.html">Writer Tips</a><a href="blog.html">Publishing Guide</a><a href="blog.html">Workshops</a>
+    </div>
+    <div class="footer-col">
+      <h4>TOP GENRES</h4>
+      <a href="fiction.html?sub=literary">Literary Fiction</a><a href="index.html#discover">Romance</a><a href="index.html#discover">Mystery</a><a href="index.html#discover">Sci-Fi</a>
+    </div>
+    <div class="footer-col">
+      <h4>HELP</h4>
+      <a href="about.html">About Penaura</a><a href="about.html">Careers</a><a href="about.html">Contact</a><a href="about.html">Terms</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Penaura. All rights reserved.</span>
+    <span>Where every word finds its reader.</span>
+  </div>
+</footer>
+
+<script src="js/mammoth.browser.min.js"></script>
+<script src="js/doc-importer.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/api-client.js"></script>
+<script src="js/dom-utils.js"></script>
+<script src="js/auth-nav.js"></script>
+<script src="js/edit-chapter.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/signin.css">
+</head>
+<body class="signin-page">
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+    <nav class="links">
+      <a href="index.html#discover">Discover</a>
+      <a href="fiction.html">Fiction</a>
+      <a href="poem.html">Poetry</a>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+    </nav>
+    <div class="nav-right">
+      <span class="search-link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Search</span>
+      <button class="btn-signin">Sign In</button>
+    </div>
+  </div>
+</header>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="eyebrow">WELCOME BACK</div>
+    <h1>Sign in to Penaura</h1>
+    <p class="subtext">Continue reading, writing, and picking up right where you left off.</p>
+
+    <div id="signin-alert" style="display:none; padding: 0.8rem 1rem; border-radius: var(--radius); margin-bottom: 1.2rem; font-size: 0.88rem; font-family: var(--font-body);"></div>
+    <form id="signin-form" action="index.html" method="POST">
+      <div class="form-group">
+        <label for="email">EMAIL</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label for="password">PASSWORD</label>
+        <input type="password" id="password" name="password" placeholder="••••••••">
+      </div>
+
+      <div class="auth-options">
+        <label><input type="checkbox"> Remember me</label>
+        <a href="forgot-password.html">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn-auth-submit">Sign In →</button>
+    </form>
+
+    <div class="auth-divider">OR CONTINUE WITH</div>
+
+    <button class="btn-social">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+
+    <p class="auth-footer-text">Don't have an account? <a href="signup.html">Sign up</a></p>
+  </div>
+</div>
+
+<div class="newsletter">
+  <div class="eyebrow">STAY LITERARY</div>
+  <h2>Get Stories Worth Reading Straight to Your Inbox</h2>
+  <p>Subscribe to our weekly digest — curated fiction, poetry, and essays from Penaura's best writers. No noise, just literature.</p>
+  <div class="subscribe-row">
+    <input type="email" placeholder="Your email address">
+    <button>Subscribe</button>
+  </div>
+  <div class="fine">Subscribe and read our <a href="about.html">Privacy Policy</a>.</div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+      <p>A home for writers and the readers who love them.</p>
+      <div class="social-row">
+        <span>Fb</span><span>Tw</span><span>Ig</span><span>Yt</span>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>DISCOVER</h4>
+      <a href="fiction.html">Fiction</a><a href="poem.html">Poetry</a><a href="index.html#discover">Essays</a><a href="index.html#discover">Non-fiction</a>
+    </div>
+    <div class="footer-col">
+      <h4>WRITERS</h4>
+      <a href="upload.html">Start Writing</a><a href="blog.html">Writer Tips</a><a href="blog.html">Publishing Guide</a><a href="blog.html">Workshops</a>
+    </div>
+    <div class="footer-col">
+      <h4>TOP GENRES</h4>
+      <a href="fiction.html?sub=literary">Literary Fiction</a><a href="index.html#discover">Romance</a><a href="index.html#discover">Mystery</a><a href="index.html#discover">Sci-Fi</a>
+    </div>
+    <div class="footer-col">
+      <h4>HELP</h4>
+      <a href="about.html">About Penaura</a><a href="about.html">Careers</a><a href="about.html">Contact</a><a href="about.html">Terms</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Penaura. All rights reserved.</span>
+    <span>Where every word finds its reader.</span>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/api-client.js"></script>
+<script src="js/dom-utils.js"></script>
+<script src="js/auth-nav.js"></script>
+<script src="js/password-toggle.js"></script>
+<script src="js/signin.js"></script>
+</body>
+</html>

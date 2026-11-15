@@ -1,0 +1,66 @@
+.about-page .about-contact {
+	padding: 2.75rem 0;
+	border-top: 1px solid var(--line);
+}
+
+.about-page .about-contact .wrap {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(260px, 0.75fr);
+	align-items: center;
+	gap: 2rem;
+}
+
+.about-page .about-contact h2 {
+	margin: 0.35rem 0 0.5rem;
+	font-family: var(--font-display);
+	font-size: 1.6rem;
+}
+
+.about-page .about-contact-copy p {
+	max-width: 52ch;
+	margin: 0;
+	color: var(--spreesso-soft);
+}
+
+.about-page .about-contact-details {
+	display: grid;
+	gap: 0.9rem;
+	margin: 0;
+}
+
+.about-page .about-contact-details dt {
+	margin-bottom: 0.2rem;
+	color: var(--espresso-soft);
+	font-family: var(--font-mono);
+	font-size: 0.7rem;
+	text-transform: uppercase;
+}
+
+.about-page .about-contact-details dd {
+	margin: 0;
+	font-size: 1rem;
+}
+
+.about-page .about-contact-details a {
+	color: var(--terracotta);
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+.about-page .about-contact-note {
+	margin: 0;
+	color: var(--espresso-soft);
+	font-family: var(--font-mono);
+	font-size: 0.65rem;
+}
+
+.about-page .section--flush-top {
+	padding-top: 0;
+}
+
+@media (max-width: 620px) {
+	.about-page .about-contact .wrap {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 1.25rem;
+	}
+}

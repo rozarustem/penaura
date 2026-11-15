@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload a Story — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/upload.css">
+
+<body class="upload-page">
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+    <nav class="links">
+      <a href="index.html#discover">Discover</a>
+      <a href="fiction.html">Fiction</a>
+      <a href="poem.html">Poetry</a>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+    </nav>
+    <div class="nav-right">
+      <span class="search-link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Search</span>
+      <button class="btn-signin">Sign In</button>
+    </div>
+  </div>
+</header>
+
+<section class="page-hero section--no-top-border">
+  <div class="wrap">
+    <h1 id="upload-heading">Start a New Book</h1>
+    <p id="upload-intro">Set up your book's details first — you'll add chapters one by one from the book's page.</p>
+  </div>
+</section>
+
+<div class="wrap upload-layout">
+  <div style="grid-column: 1 / -1; width: 100%;">
+    <div id="upload-alert" style="display:none; padding: 0.85rem 1.2rem; border-radius: var(--radius); margin-bottom: 1.5rem; font-size: 0.9rem; font-family: var(--font-body);"></div>
+  </div>
+  <form class="upload-form" id="upload-book-form">
+    <fieldset class="creation-type-control">
+      <legend>WHAT ARE YOU CREATING?</legend>
+      <label class="creation-type-option">
+        <input type="radio" name="creation-type" value="poem" aria-controls="poem-topic-group book-description-group">
+        <span><strong>Poem</strong><small>Write a standalone poem</small></span>
+      </label>
+      <label class="creation-type-option">
+        <input type="radio" name="creation-type" value="chaptered" checked aria-controls="book-description-group">
+        <span><strong>Chaptered book</strong><small>Add chapters separately</small></span>
+      </label>
+      <label class="creation-type-option">
+        <input type="radio" name="creation-type" value="single" aria-controls="single-chapter-fields">
+        <span><strong>Short story</strong><small>Write and publish it in one part</small></span>
+      </label>
+    </fieldset>
+
+    <div class="form-group">
+      <label for="book-title"><span id="book-title-label">BOOK TITLE</span> <span style="color:var(--terracotta);">*</span></label>
+      <input type="text" id="book-title" name="title" placeholder="Give your story a title" required>
+    </div>
+
+    <div class="form-row-split">
+      <div class="form-group" id="book-genre-group">
+        <label for="book-genre">GENRE</label>
+        <select id="book-genre" name="genre">
+          <option value="Literary Fiction" selected>Literary Fiction</option>
+          <option value="Historical Fiction">Historical Fiction</option>
+          <option value="Romance">Romance</option>
+          <option value="Mystery">Mystery</option>
+          <option value="Sci-Fi">Sci-Fi</option>
+          <option value="Non-fiction">Non-fiction</option>
+          <option value="Personal Essay">Personal Essay</option>
+          <option value="Lirik she'rlar">Lirik she'rlar</option>
+          <option value="Fantastika">Fantastika</option>
+          <option value="Tarixiy roman">Tarixiy roman</option>
+          <option value="She'riy doston">She'riy doston</option>
+          <option value="Poetry">Poetry</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="book-language">LANGUAGE</label>
+        <select id="book-language" name="language">
+          <option value="Uzbek">O'zbek</option>
+          <option value="English">English</option>
+          <option value="Russian">Русский</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group poem-topic-group" id="poem-topic-group" hidden>
+      <label for="poem-topic">POEM TOPIC</label>
+      <select id="poem-topic">
+        <option value="love">Love</option>
+        <option value="grief">Grief</option>
+        <option value="nature">Nature</option>
+        <option value="home">Home</option>
+        <option value="identity">Identity</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="book-description-group">
+      <label for="book-description"><span id="description-label">SHORT DESCRIPTION</span> <span style="color:var(--terracotta);">*</span></label>
+      <textarea id="book-description" name="description" placeholder="Write a short, compelling description that makes readers want to click..." rows="5" required></textarea>
+    </div>
+
+    <div class="form-group single-chapter-fields" id="single-chapter-fields" hidden>
+      <label for="single-chapter-title">STORY TITLE *</label>
+      <input type="text" id="single-chapter-title" placeholder="Short story title">
+      <label for="single-chapter-content">STORY TEXT *</label>
+      <textarea id="single-chapter-content" rows="12" placeholder="Write your complete short story..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="book-tags-input">TAGS</label>
+      <div class="tag-input-row" id="tag-container">
+        <input type="text" id="book-tags-input" name="tags_input" placeholder="Type tag and press Enter or comma...">
+      </div>
+      <small style="color:var(--espresso-soft); font-size:0.75rem; font-family:var(--font-mono);">Press Enter or comma to add tags</small>
+    </div>
+  </form>
+
+  <div class="upload-sidebar" id="upload-sidebar">
+    <div class="sidebar-box" id="cover-sidebar-box">
+      <h3>Cover Image</h3>
+      <p class="desc">A good cover helps readers discover your story.</p>
+      <label class="cover-dropzone" for="book-cover" style="cursor:pointer; overflow:hidden; position:relative; min-height:160px;">
+        <input type="file" id="book-cover" name="cover" accept="image/*" style="display:none;">
+        <div id="cover-preview-wrapper" style="text-align:center;">
+          <div class="cover-icon">🖼</div>
+          <div class="cover-text" id="cover-text">Upload cover<br>(portrait, 2:3 ratio)</div>
+        </div>
+        <img id="cover-img-preview" src="" alt="Cover Preview" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:var(--radius);">
+      </label>
+    </div>
+
+    <div class="sidebar-box">
+      <h3>Publishing Status</h3>
+      <p class="desc" id="status-description">Choose your book visibility.</p>
+      <div class="radio-row">
+        <label class="radio-option">
+          <input type="radio" id="status-published" name="status" value="published" checked>
+          Published
+        </label>
+        <label class="radio-option">
+          <input type="radio" id="status-draft" name="status" value="draft">
+          Draft
+        </label>
+      </div>
+      <button type="button" id="btn-continue" class="btn-publish">Continue to Add Chapters →</button>
+      <button type="button" id="btn-save-draft" class="btn-save-draft">Save as Draft</button>
+    </div>
+  </div>
+</div>
+
+<div class="newsletter">
+  <div class="eyebrow">STAY LITERARY</div>
+  <h2>Get Stories Worth Reading Straight to Your Inbox</h2>
+  <p>Subscribe to our weekly digest — curated fiction, poetry, and essays from Penaura's best writers. No noise, just literature.</p>
+  <div class="subscribe-row">
+    <input type="email" placeholder="Your email address">
+    <button>Subscribe</button>
+  </div>
+  <div class="fine">Subscribe and read our <a href="about.html">Privacy Policy</a>.</div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+      <p>A home for writers and the readers who love them.</p>
+      <div class="social-row">
+        <span>Fb</span><span>Tw</span><span>Ig</span><span>Yt</span>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>DISCOVER</h4>
+      <a href="fiction.html">Fiction</a><a href="poem.html">Poetry</a><a href="index.html#discover">Essays</a><a href="index.html#discover">Non-fiction</a>
+    </div>
+    <div class="footer-col">
+      <h4>WRITERS</h4>
+      <a href="upload.html">Start Writing</a><a href="blog.html">Writer Tips</a><a href="blog.html">Publishing Guide</a><a href="blog.html">Workshops</a>
+    </div>
+    <div class="footer-col">
+      <h4>TOP GENRES</h4>
+      <a href="fiction.html?sub=literary">Literary Fiction</a><a href="index.html#discover">Romance</a><a href="index.html#discover">Mystery</a><a href="index.html#discover">Sci-Fi</a>
+    </div>
+    <div class="footer-col">
+      <h4>HELP</h4>
+      <a href="about.html">About Penaura</a><a href="about.html">Careers</a><a href="about.html">Contact</a><a href="about.html">Terms</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Penaura. All rights reserved.</span>
+    <span>Where every word finds its reader.</span>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/api-client.js"></script>
+<script src="js/dom-utils.js"></script>
+<script src="js/auth-nav.js"></script>
+<script src="js/upload.js"></script>
+</body>
+</html>

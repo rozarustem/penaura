@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/settings.css">
+</head>
+<body class="settings-page">
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+    <nav class="links">
+      <a href="index.html#discover">Discover</a>
+      <a href="fiction.html">Fiction</a>
+      <a href="poem.html">Poetry</a>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+    </nav>
+    <div class="nav-right">
+      <span class="search-link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Search</span>
+      <button class="btn-signin">Sign In</button>
+    </div>
+  </div>
+</header>
+
+<section class="page-hero section--no-top-border">
+  <div class="wrap">
+    <h1>Settings</h1>
+  </div>
+</section>
+
+<div class="wrap settings-layout" id="settings-general">
+  <nav class="settings-nav">
+    <a href="#settings-general" class="active">General</a>
+    <a href="#settings-profile">Profile</a>
+    <a href="#settings-language">Language</a>
+    <a href="#settings-password">Password &amp; Security</a>
+    <a href="#settings-contact">Contact</a>
+    <a class="profile-back-link" href="reader_profil.html">← Back to Profile</a>
+  </nav>
+
+  <div>
+    <div class="settings-section">
+      <h3 id="settings-profile">Profile</h3>
+      <p class="desc">Your name, photo and a short bio shown on your profile.</p>
+      <div class="avatar-row">
+        <div class="avatar-preview" id="avatar-preview"></div>
+        <div class="avatar-actions">
+          <input type="file" id="avatar-input" accept="image/png,image/jpeg,image/webp" hidden>
+          <button type="button" class="btn-secondary" id="avatar-pick">Change photo</button>
+          <div class="avatar-hint">JPG, PNG yoki WEBP, 2 MB gacha.</div>
+          <div class="form-status" id="avatar-status" role="status"></div>
+        </div>
+      </div>
+      <form class="settings-form" id="profile-form" action="#" method="POST">
+        <div class="form-group">
+          <label for="settings-name">FULL NAME</label>
+          <input type="text" id="settings-name" maxlength="150" required>
+        </div>
+        <div class="form-group">
+          <label for="settings-city">CITY</label>
+          <input type="text" id="settings-city" maxlength="80">
+        </div>
+        <div class="form-group form-group--wide">
+          <label for="settings-bio">BIO / ABOUT YOU</label>
+          <textarea id="settings-bio"></textarea>
+        </div>
+        <button type="submit" class="btn-save">Save Profile</button>
+        <div class="form-status" id="profile-status" role="status"></div>
+      </form>
+    </div>
+
+    <div class="settings-section">
+      <h3 id="settings-language">Language</h3>
+      <p class="desc">Choose the language you'd like to use across Penaura.</p>
+      <div class="lang-options">
+        <label class="lang-option">
+          <input type="radio" name="lang" checked>
+          <span class="flag">🇺🇿</span>
+          <span class="name">O'zbek</span>
+        </label>
+        <label class="lang-option">
+          <input type="radio" name="lang">
+          <span class="flag">🇬🇧</span>
+          <span class="name">English</span>
+        </label>
+        <label class="lang-option">
+          <input type="radio" name="lang">
+          <span class="flag">🇷🇺</span>
+          <span class="name">Русский</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3 id="settings-password">Change Password</h3>
+      <p class="desc">Choose a strong password you don't use elsewhere.</p>
+      <form class="settings-form" id="password-form" action="#" method="POST">
+        <div class="form-group form-group--wide">
+          <label for="pw-old">CURRENT PASSWORD</label>
+          <input type="password" id="pw-old" placeholder="••••••••" autocomplete="current-password" required>
+          <a class="field-link" href="forgot-password.html">Forgot your current password?</a>
+        </div>
+        <div class="form-group">
+          <label for="pw-new">NEW PASSWORD</label>
+          <input type="password" id="pw-new" placeholder="••••••••" minlength="8" autocomplete="new-password" required>
+        </div>
+        <div class="form-group">
+          <label for="pw-confirm">CONFIRM NEW PASSWORD</label>
+          <input type="password" id="pw-confirm" placeholder="••••••••" minlength="8" autocomplete="new-password" required>
+        </div>
+        <button type="submit" class="btn-save">Update Password</button>
+        <div class="form-status" id="password-status" role="status"></div>
+      </form>
+    </div>
+
+    <div class="settings-section">
+      <h3 id="settings-contact">Contact Information</h3>
+      <p class="desc">Used for account recovery and important notifications.</p>
+      <form class="settings-form" id="contact-form" action="#" method="POST">
+        <div class="form-group">
+          <label for="settings-email">EMAIL</label>
+          <input type="email" id="settings-email" readonly aria-describedby="email-hint">
+          <div class="field-hint" id="email-hint">Email o'zgartirib bo'lmaydi.</div>
+        </div>
+        <div class="form-group">
+          <label for="settings-phone">PHONE NUMBER</label>
+          <input type="tel" id="settings-phone" maxlength="20">
+        </div>
+        <button type="submit" class="btn-save">Save Changes</button>
+        <div class="form-status" id="contact-status" role="status"></div>
+      </form>
+    </div>
+
+    <div class="settings-section earnings-section" id="earnings-section" hidden>
+      <h3 id="settings-earnings">Earnings</h3>
+      <p class="desc" id="earnings-desc">Every time a reader unlocks one of your chapters, the payment is split instantly: 70% goes to you and 30% goes to the platform.</p>
+      <div class="split-visual" id="split-visual">
+        <div class="split-bar" id="split-bar" role="img" aria-label="Revenue split: 70% to the writer, 30% to the platform">
+          <div class="split-seg split-seg--writer" id="split-writer"><span id="split-writer-label">You · 70%</span></div>
+          <div class="split-seg split-seg--platform" id="split-platform"><span id="split-platform-label">Platform · 30%</span></div>
+        </div>
+        <p class="split-example" id="split-example"></p>
+        <div class="split-totals" id="split-totals"></div>
+      </div>
+      <div class="earn-stats" id="earn-stats"></div>
+      <form class="settings-form" id="withdraw-form" action="#" method="POST">
+        <div class="form-group">
+          <label for="withdraw-amount">AMOUNT (SO'M)</label>
+          <input type="number" id="withdraw-amount" min="1" step="1" inputmode="numeric" required>
+          <div class="field-hint" id="withdraw-hint"></div>
+        </div>
+        <div class="form-group">
+          <label for="withdraw-card">CARD (LAST 4 DIGITS)</label>
+          <input type="text" id="withdraw-card" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" placeholder="4417" required>
+          <div class="field-hint">Never enter the full card number.</div>
+        </div>
+        <button type="submit" class="btn-save">Request payout</button>
+        <div class="form-status" id="withdraw-status" role="status"></div>
+      </form>
+      <h4 class="earn-sub">Recent sales</h4>
+      <div class="earn-table-wrap"><table class="earn-table"><thead><tr><th>Date</th><th>Work</th><th>Coins</th><th>Reader paid</th><th id="th-writer">Your share (70%)</th><th id="th-platform">Platform (30%)</th></tr></thead><tbody id="earn-splits"></tbody></table></div>
+      <h4 class="earn-sub">Payout requests</h4>
+      <div class="earn-table-wrap"><table class="earn-table"><thead><tr><th>Date</th><th>Amount</th><th>Card</th><th>Status</th></tr></thead><tbody id="earn-withdrawals"></tbody></table></div>
+    </div>
+
+    <div class="settings-section danger-zone">
+      <h3>Danger Zone</h3>
+      <p class="desc">Deleting your account is permanent and cannot be undone. Your profile, follows and reading progress will be removed.</p>
+      <form class="settings-form" id="delete-form" action="#" method="POST">
+        <div class="form-group form-group--wide">
+          <label for="delete-password">CONFIRM WITH YOUR PASSWORD</label>
+          <input type="password" id="delete-password" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn-danger" id="delete-btn">Delete My Account</button>
+        <div class="form-status" id="delete-status" role="status"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="newsletter">
+  <div class="eyebrow">STAY LITERARY</div>
+  <h2>Get Stories Worth Reading Straight to Your Inbox</h2>
+  <p>Subscribe to our weekly digest — curated fiction, poetry, and essays from Penaura's best writers. No noise, just literature.</p>
+  <div class="subscribe-row">
+    <input type="email" placeholder="Your email address">
+    <button>Subscribe</button>
+  </div>
+  <div class="fine">Subscribe and read our <a href="about.html">Privacy Policy</a>.</div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+      <p>A home for writers and the readers who love them.</p>
+      <div class="social-row">
+        <span>Fb</span><span>Tw</span><span>Ig</span><span>Yt</span>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>DISCOVER</h4>
+      <a href="fiction.html">Fiction</a><a href="poem.html">Poetry</a><a href="index.html#discover">Essays</a><a href="index.html#discover">Non-fiction</a>
+    </div>
+    <div class="footer-col">
+      <h4>WRITERS</h4>
+      <a href="upload.html">Start Writing</a><a href="blog.html">Writer Tips</a><a href="blog.html">Publishing Guide</a><a href="blog.html">Workshops</a>
+    </div>
+    <div class="footer-col">
+      <h4>TOP GENRES</h4>
+      <a href="fiction.html?sub=literary">Literary Fiction</a><a href="index.html#discover">Romance</a><a href="index.html#discover">Mystery</a><a href="index.html#discover">Sci-Fi</a>
+    </div>
+    <div class="footer-col">
+      <h4>HELP</h4>
+      <a href="about.html">About Penaura</a><a href="about.html">Careers</a><a href="about.html">Contact</a><a href="about.html">Terms</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Penaura. All rights reserved.</span>
+    <span>Where every word finds its reader.</span>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/api-client.js"></script>
+<script src="js/dom-utils.js"></script>
+<script src="js/auth-nav.js"></script>
+<script src="js/password-toggle.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/earnings-settings.js"></script>
+</body>
+</html>

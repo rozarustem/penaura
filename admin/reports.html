@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hisobotlar — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main"></main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script>
+const B = Admin.B;
+const num = n => String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const som = n => num(n) + " so'm";
+const when = v => { if (!v) return "—"; const d = new Date(v); return d.toLocaleDateString("uz-UZ") + " " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+const MONTHS = ["Yanvar", "Fevral", "Mart", "Aprel", "May", "Iyun", "Iyul", "Avgust", "Sentabr", "Oktabr", "Noyabr", "Dekabr"];
+const unit = (n, u) => u === "so'm" ? som(n) : num(n) + " " + u;
+const signed = (n, u) => n === 0 ? "0" : (n > 0 ? "+" : "−") + unit(n, u);
+(async () => {
+  let d = null, err = "";
+  try { d = await AdminApi.request("/auth/admin/reports/"); } catch (e) { err = e.message; }
+  const stats = [
+    ["Jami tushum", d ? som(d.sold_total_som) : "—", "Sotilgan tangalar uchun"],
+    ["Bob ochilishlaridan", d ? som(d.unlocks_total_som) : "—", d ? "Yozuvchi " + d.writer_percent + "% · platforma " + (100 - d.writer_percent) + "%" : ""],
+    ["Platforma daromadi", d ? som(d.platform_total_som) : "—", d ? "Yozuvchilarga to'lanishi kerak: " + som(d.writers_payable_som) : ""],
+    ["Nomuvofiq farqlar", d ? String(d.mismatches) : "—", d ? (d.mismatches ? "Quyidagi tekshiruvlarga qarang" : "Hamma hisob-kitob mos") : "", d && d.mismatches ? "down" : "up"]
+  ];
+  if (d && d.mock_paid_count) stats.push(["Test to'lovlar", String(d.mock_paid_count), som(d.mock_paid_som) + " jami tushumga kirgan", "down"]);
+  Admin.page({ title: "Hisobotlar", sub: err ? "Ma'lumotni yuklab bo'lmadi: " + err : "Oylik hisobot va hisob-kitob tekshiruvi: tanga, buyurtma va pul bo'linishlari bir-biriga mos kelishi tekshiriladi.", sections: [
+    { type: "stats", items: stats },
+    { type: "table", title: "Oylik hisobot (oxirgi 6 oy)", size: 6, cols: ["Oy", { h: "Tanga sotuvi", mono: 1 }, { h: "Bob ochilishlari", mono: 1 }, { h: "Ochilishlar summasi", mono: 1 }, { h: "Yozuvchilarga", mono: 1 }, { h: "Platforma", mono: 1 }, { h: "To'langan", mono: 1 }],
+      rows: d ? d.months.slice().reverse().map(m => [MONTHS[Number(m.month.slice(5)) - 1] + " " + m.month.slice(0, 4), som(m.sold_som), num(m.unlocks) + " ta", som(m.unlocks_som), som(m.writers_som), som(m.platform_som), som(m.withdrawn_som)]) : [] },
+    { type: "table", title: "Hisob-kitob tekshiruvi", cols: ["Tekshiruv", { h: "Kutilgan", mono: 1 }, { h: "Hozirgi", mono: 1 }, { h: "Farq", mono: 1 }, "Holat", "Amal"],
+      rows: d ? d.checks.map(c => [c.label, unit(c.expected, c.unit), unit(c.actual, c.unit), c.ok ? "0" : signed(c.diff, c.unit), c.ok ? B("Mos", "ok") : B("Nomuvofiq", "err"),
+        { btns: [{ text: "Izoh", fn: () => Admin.dialog({ title: c.label, text: c.hint + ". " + (c.ok ? "Hozir hammasi mos." : "Kutilgan " + unit(c.expected, c.unit) + ", lekin hozir " + unit(c.actual, c.unit) + ". Bunday farq odatda qo'lda bazaga kirilganini yoki to'lov jarayoni uzilganini bildiradi: tranzaksiyalar va audit jurnalini tekshiring."), ok: "Yopish" }) }] }]) : [] }
+  ] });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+.env
+.env.*
+db.sqlite3
+*.sqlite3
+*.bak
+media/
+staticfiles/
+__pycache__/
+*.pyc
+venv/
+.venv/
+.vscode/
+.git

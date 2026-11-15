@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tranzaksiyalar — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main"></main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script>
+const B = Admin.B;
+const num = n => String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const money = n => (n > 0 ? "+" : n < 0 ? "−" : "") + num(n) + " so'm";
+const when = v => { const d = new Date(v); return d.toLocaleDateString("uz-UZ") + " " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+(async () => {
+  let f = null, err = "";
+  try { f = await AdminApi.request("/auth/admin/finance/"); } catch (e) { err = e.message; }
+  const rows = f ? f.events.map(e => [e.id, e.label, e.user,
+    e.kind === "split" ? num(e.som) + " so'm" : money(e.som), when(e.when), B("Bajarildi", "ok")]) : [];
+  Admin.page({ title: "Tranzaksiyalar", sub: err ? "Ma'lumotni yuklab bo'lmadi: " + err : "Barcha pul harakatlari: tanga xaridi (kirim), bob ochilishi (70/30 bo'linadi) va yozuvchilarga to'lov (chiqim).", sections: [
+    { type: "stats", items: [["Kirim, shu oy", f ? num(f.in_month_som) + " so'm" : "—"], ["Chiqim, shu oy", f ? num(f.out_month_som) + " so'm" : "—"],
+      ["Platforma daromadi (" + (f ? 100 - f.writer_percent : 30) + "%)", f ? num(f.platform_total_som) + " so'm" : "—", "Bob ochilishlaridan, jami"],
+      ["Kutilayotgan to'lovlar", f ? String(f.pending_count) : "—", f ? num(f.pending_som) + " so'm" : "", f && f.pending_count ? "down" : ""]] },
+    { type: "table", title: "Oxirgi tranzaksiyalar", search: true, cols: [{ h: "ID", mono: 1 }, "Amal", "Foydalanuvchi", { h: "Summa", mono: 1 }, { h: "Vaqt", mono: 1 }, "Holat"], rows }
+  ] });
+})();
+</script>
+</body>
+</html>

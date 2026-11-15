@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bobni tahrirlash — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main">
+  <div class="page-head">
+    <div><a class="back" id="back" href="editorial.html">← Tahririyat</a><h1 id="head-title">Bobni tahrirlash</h1><p class="sub" id="head-sub"></p></div>
+    <div class="ed-status"><span id="save-icon">●</span> <span id="save-text">Tayyor</span></div>
+  </div>
+  <div class="card" id="missing" hidden><h2>Bob topilmadi</h2><p class="sub">Bunday kitob yoki bob yo'q.</p></div>
+  <div class="ed-layout" id="editor">
+    <div>
+      <input class="ed-title" id="title" type="text" placeholder="Bob nomi" aria-label="Bob nomi">
+      <div class="ed-toolbar" id="toolbar">
+        <button type="button" data-cmd="bold" title="Qalin"><b>B</b></button>
+        <button type="button" data-cmd="italic" title="Kursiv"><i>I</i></button>
+        <button type="button" data-cmd="formatBlock" data-val="h3" title="Sarlavha"><b>H</b></button>
+        <button type="button" data-cmd="formatBlock" data-val="blockquote" title="Iqtibos">”</button>
+        <button type="button" data-cmd="insertUnorderedList" title="Ro'yxat">•</button>
+      </div>
+      <div class="ed-body" id="body" contenteditable="true" aria-label="Bob matni"></div>
+    </div>
+    <div class="ed-side">
+      <div class="card" id="readonly-note" hidden><p class="note" style="margin:0" id="readonly-text"></p></div>
+      <div class="card" id="writer-note" hidden><h3>Tahrirchi izohi</h3><p class="note" style="margin:0" id="writer-note-text"></p></div>
+      <div class="card">
+        <h3>Bob haqida</h3>
+        <div class="ed-row"><span>Bob</span><strong id="stat-num"></strong></div>
+        <div class="ed-row"><span>So'zlar</span><strong id="stat-words"></strong></div>
+        <div class="ed-row"><span>Tahrir</span><strong id="stat-edited"></strong></div>
+        <div class="ed-row"><span>Oxirgi saqlash</span><strong id="stat-saved"></strong></div>
+      </div>
+      <div class="card" id="access-card">
+        <h3>Kirish turi</h3>
+        <div class="ed-radio">
+          <label><input type="radio" name="access" value="free" id="acc-free"> Bepul</label>
+          <label><input type="radio" name="access" value="premium" id="acc-prem"> Premium</label>
+        </div>
+      </div>
+      <div class="card ed-actions">
+        <button type="button" class="btn btn-primary" id="btn-done">Saqlash va tahrirlangan deb belgilash</button>
+        <button type="button" class="btn" id="btn-save">Faqat saqlash</button>
+        <button type="button" class="btn" id="btn-publish">Saytga chiqarish</button>
+        <button type="button" class="btn btn-danger-o" id="btn-return">Yozuvchiga qaytarish</button>
+        <div class="ed-nav"><button type="button" class="btn btn-sm" id="btn-prev">‹ Oldingi</button><button type="button" class="btn btn-sm" id="btn-next">Keyingi ›</button></div>
+      </div>
+    </div>
+  </div>
+</main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script src="js/manuscripts.js"></script>
+<script>
+(async () => {
+  if (!Admin.start()) return;
+  const $ = id => document.getElementById(id), M = Manuscripts;
+  try { await M.load(); } catch (e) { $("editor").hidden = true; $("missing").hidden = false; alert((e && e.message) || "Ma'lumotni yuklab bo'lmadi."); return; }
+  const q = new URLSearchParams(location.search), kind = q.get("kind") === "poem" ? "poem" : "book", wid = q.get("id");
+  const w = M.get(kind, wid), idx = w ? w.chapters.findIndex(c => c.id === q.get("chapter")) : -1;
+  if (!w || idx < 0) { $("editor").hidden = true; $("missing").hidden = false; return; }
+
+  const c = w.chapters[idx], poem = kind === "poem";
+  const mine = M.isMine(w), editable = mine && c.status === "editing";
+  const listUrl = "manuscript.html?kind=" + kind + "&id=" + encodeURIComponent(wid);
+  const title = $("title");
+  let body = $("body"), dirty = false;
+
+  $("back").href = listUrl; $("back").textContent = "← " + w.title;
+  $("head-title").textContent = poem ? "She'rni tahrirlash" : "Bobni tahrirlash"; $("head-sub").textContent = w.author + " · " + w.title;
+  document.title = c.title + " — Penaura";
+  title.value = c.title;
+
+  if (poem) {                       /* she'r: oddiy matn, qator va band bo'shliqlari saqlanadi */
+    const ta = document.createElement("textarea"); ta.id = "body"; ta.className = "ed-body"; ta.value = c.content;
+    ta.style.cssText = "width:100%;box-sizing:border-box;min-height:360px;resize:vertical;white-space:pre-wrap";
+    body.replaceWith(ta); body = ta;
+    $("toolbar").style.display = "none"; $("access-card").style.display = "none";
+  } else {
+    body.replaceChildren(); body.insertAdjacentHTML("beforeend", M.safeHtml(M.toHtml(c.content)) || "<p><br></p>");
+    (c.isPremium ? $("acc-prem") : $("acc-free")).checked = true;
+  }
+  const getContent = () => poem ? body.value : M.safeHtml(body.innerHTML);
+  const wordCount = () => poem ? body.value.trim().split(/\s+/).filter(Boolean).length : M.words(body.innerHTML);
+
+  function stats() {
+    $("stat-num").textContent = (idx + 1) + " / " + w.chapters.length;
+    $("stat-words").textContent = wordCount();
+    $("stat-edited").textContent = M.SHORT[c.status] + (c.status === "editing" ? (c.edited ? " · tahrirlangan" : " · tahrirlanmagan") : "");
+    $("stat-saved").textContent = c.updatedAt || "—";
+  }
+  const mark = (text, color) => { $("save-text").textContent = text; $("save-icon").style.color = color; };
+  const setDirty = () => { dirty = true; mark("Saqlanmagan o'zgarishlar", "var(--terra)"); };
+  stats();
+
+  if (c.status === "returned" && c.editorNote) { $("writer-note").hidden = false; $("writer-note-text").textContent = c.editorNote; }
+
+  const prev = w.chapters[idx - 1], next = w.chapters[idx + 1];
+  const url = ch => "manuscript-chapter.html?kind=" + kind + "&id=" + encodeURIComponent(wid) + "&chapter=" + encodeURIComponent(ch.id);
+  const warn = () => !dirty || confirm("Saqlanmagan o'zgarishlar bor. Baribir chiqasizmi?");
+  const go = href => { if (!warn()) return; dirty = false; location.href = href; };
+  $("btn-prev").disabled = !prev; $("btn-next").disabled = !next;
+  if (prev) $("btn-prev").addEventListener("click", () => go(url(prev)));
+  if (next) $("btn-next").addEventListener("click", () => go(url(next)));
+  $("back").addEventListener("click", e => { if (!warn()) e.preventDefault(); else dirty = false; });
+  window.addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+  if (!editable) {
+    body.contentEditable = "false"; body.readOnly = true; title.readOnly = true;
+    const why = w.lock && !mine ? w.lock.by + " tahrirlayapti, shuning uchun faqat ko'rish mumkin."
+      : c.status === "submitted" ? "Tahrirni boshlash uchun avval asarni «Olib qo'yish» kerak." : c.status === "returned" ? "Bu matn yozuvchida, tuzatilishi kutilmoqda." : "Bu matn hozir tahrirda emas, faqat ko'rish mumkin.";
+    $("readonly-text").textContent = why; $("readonly-note").hidden = false;
+    document.querySelectorAll("#toolbar button, #btn-done, #btn-save, #btn-publish, #btn-return, input[name=access]").forEach(x => x.disabled = true);
+    return;
+  }
+
+  try { document.execCommand("defaultParagraphSeparator", false, "p"); } catch (e) {}
+  document.querySelectorAll("#toolbar button").forEach(b => b.addEventListener("click", e => {
+    e.preventDefault(); document.execCommand(b.dataset.cmd, false, b.dataset.val || null); body.focus(); setDirty(); stats();
+  }));
+  if (!poem) body.addEventListener("paste", e => {
+    const cb = e.clipboardData; if (!cb) return;
+    const html = cb.getData("text/html"), txt = cb.getData("text/plain"); if (!html && !txt) return;
+    e.preventDefault();
+    const esc = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    document.execCommand("insertHTML", false, M.safeHtml(html || "<p>" + esc(txt).replace(/\r?\n/g, "<br>") + "</p>"));
+  });
+  body.addEventListener("input", () => { setDirty(); stats(); });
+  title.addEventListener("input", setDirty);
+  document.querySelectorAll("input[name=access]").forEach(r => r.addEventListener("change", setDirty));
+
+  let saving = false;
+  async function save(markEdited) {
+    const name = title.value.trim();
+    if (!name) { alert("Iltimos, nomini kiriting."); title.focus(); return false; }
+    if (saving) return false;
+    saving = true; mark("Saqlanmoqda…", "var(--terra)");
+    try { await M.saveChapter(kind, wid, c.id, { title: name, content: getContent(), isPremium: !poem && $("acc-prem").checked, edited: markEdited }); }
+    catch (e) { saving = false; mark("Saqlanmadi", "var(--terra)"); M.fail(e); return false; }
+    saving = false;
+    if (markEdited) c.edited = true;
+    c.title = name; c.updatedAt = M.get(kind, wid).chapters[idx].updatedAt;
+    dirty = false; mark("Saqlandi ✓", "var(--green)"); stats();
+    Admin.done((markEdited ? "Tahrirlandi: " : "Saqlandi: ") + w.title + " — " + name);
+    return true;
+  }
+  $("btn-save").addEventListener("click", () => save(false));
+  $("btn-done").addEventListener("click", async () => { if (await save(true) && next) go(url(next)); });
+  $("btn-publish").addEventListener("click", () => { if (dirty) { alert("Avval o'zgarishlarni saqlang."); return; } M.askPublish(kind, wid, c.id, () => { location.href = listUrl; }); });
+  $("btn-return").addEventListener("click", () => { if (dirty) { alert("Avval o'zgarishlarni saqlang."); return; } M.askGiveBack(kind, wid, c.id, () => { location.href = listUrl; }); });
+  document.addEventListener("keydown", e => { if ((e.ctrlKey || e.metaKey) && e.key === "s") { e.preventDefault(); save(false); } });
+})();
+</script>
+</body>
+</html>

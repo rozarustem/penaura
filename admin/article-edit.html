@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maqola — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main">
+  <div class="page-head">
+    <div><a class="back" id="back" href="articles.html">← Blog</a><h1 id="head-title">Yangi maqola</h1><p class="sub">Matn oddiy matn: paragraflar orasida bo'sh qator qoldiring.</p></div>
+    <div class="ed-status"><span id="save-icon">●</span> <span id="save-text">Tayyor</span></div>
+  </div>
+  <div class="card" id="missing" hidden><h2>Maqola topilmadi</h2><p class="sub">Bunday maqola yo'q.</p></div>
+  <div class="ed-layout" id="editor">
+    <div class="card">
+      <label class="fld"><span>Sarlavha</span><input id="f-title" type="text" maxlength="140" placeholder="Maqola sarlavhasi"></label>
+      <label class="fld"><span>Qisqa tavsif</span><textarea id="f-summary" rows="3" maxlength="300" placeholder="Blog ro'yxatida sarlavha ostida ko'rinadi"></textarea><div class="hint" id="sum-count">0 / 300</div></label>
+      <label class="fld"><span>Matn</span><textarea id="f-content" rows="18" placeholder="Maqola matni..."></textarea><div class="hint" id="words">0 so'z</div></label>
+    </div>
+    <div class="ed-side">
+      <div class="card">
+        <h3>Muqova rasmi</h3>
+        <div class="cover-box" id="cover-box">
+          <img id="cover-img" alt="" hidden>
+          <div class="cover-empty" id="cover-empty">Rasm tanlanmagan</div>
+        </div>
+        <input type="file" id="f-cover" accept="image/jpeg,image/png,image/webp" hidden>
+        <div class="cover-actions">
+          <button type="button" class="btn" id="btn-cover">Rasm tanlash</button>
+          <button type="button" class="btn btn-danger-o" id="btn-cover-del" hidden>Olib tashlash</button>
+        </div>
+        <div class="hint cover-hint">JPG, PNG yoki WebP, 5 MB gacha. Blog ro'yxatida va maqola tepasida ko'rinadi.</div>
+      </div>
+      <div class="card">
+        <h3>Sozlamalar</h3>
+        <label class="fld"><span>Toifa</span><select id="f-category"></select></label>
+        <label class="fld"><span>Muallif</span><input id="f-author" type="text" maxlength="80" value="Penaura Team"></label>
+      </div>
+      <div class="card">
+        <h3>Maqola haqida</h3>
+        <div class="ed-row"><span>Holat</span><strong id="stat-status"></strong></div>
+        <div class="ed-row"><span>O'qish vaqti</span><strong id="stat-read"></strong></div>
+        <div class="ed-row"><span>Sana</span><strong id="stat-date"></strong></div>
+      </div>
+      <div class="card ed-actions">
+        <button type="button" class="btn btn-primary" id="btn-main"></button>
+        <button type="button" class="btn" id="btn-alt"></button>
+        <button type="button" class="btn btn-danger-o" id="btn-delete" hidden>O'chirish</button>
+      </div>
+    </div>
+  </div>
+</main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script src="js/articles.js"></script>
+<script>
+(async () => {
+  if (!Admin.start()) return;
+  const $ = id => document.getElementById(id), A = Articles;
+  const qid = new URLSearchParams(location.search).get("id");
+  let art = null, dirty = false, busy = false;
+  let coverFile = null, removeCover = false, previewUrl = null;
+  if (qid) {
+    try { await A.load(); } catch (e) { $("editor").hidden = true; $("missing").hidden = false; alert((e && e.message) || "Ma'lumotni yuklab bo'lmadi."); return; }
+    art = A.get(qid) || await A.fetchOne(qid);
+    if (!art) { $("editor").hidden = true; $("missing").hidden = false; $("head-title").textContent = "Maqola topilmadi"; return; }
+  }
+
+  A.CATEGORIES.forEach(c => { const o = document.createElement("option"); o.value = o.textContent = c; $("f-category").append(o); });
+  function fill() {
+    $("f-title").value = art ? art.title : ""; $("f-summary").value = art ? art.summary : ""; $("f-content").value = art ? art.content : "";
+    $("f-author").value = art ? art.author : "Penaura Team";
+    if (art && !A.CATEGORIES.includes(art.category)) { const o = document.createElement("option"); o.value = o.textContent = art.category; $("f-category").append(o); }
+    $("f-category").value = art ? art.category : A.CATEGORIES[0];
+    $("head-title").textContent = art ? "Maqolani tahrirlash" : "Yangi maqola";
+    showCover();
+  }
+  const MAX_COVER = 5 * 1024 * 1024;
+  function showCover() {
+    const src = coverFile ? previewUrl : (!removeCover && art && art.cover) || "";
+    $("cover-img").hidden = !src; $("cover-empty").hidden = !!src;
+    if (src) $("cover-img").src = src; else $("cover-img").removeAttribute("src");
+    $("btn-cover").textContent = src ? "Rasmni almashtirish" : "Rasm tanlash";
+    $("btn-cover-del").hidden = !src;
+  }
+  $("btn-cover").addEventListener("click", () => $("f-cover").click());
+  $("f-cover").addEventListener("change", e => {
+    const f = e.target.files[0]; e.target.value = "";
+    if (!f) return;
+    if (!/^image\/(jpeg|png|webp)$/.test(f.type)) { alert("Faqat JPG, PNG yoki WebP rasm tanlang."); return; }
+    if (f.size > MAX_COVER) { alert("Rasm hajmi 5 MB dan oshmasligi kerak."); return; }
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    coverFile = f; removeCover = false; previewUrl = URL.createObjectURL(f);
+    dirty = true; mark("Saqlanmagan o'zgarishlar", "var(--terra)"); showCover();
+  });
+  $("btn-cover-del").addEventListener("click", () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    coverFile = null; previewUrl = null; removeCover = !!(art && art.cover);
+    dirty = true; mark("Saqlanmagan o'zgarishlar", "var(--terra)"); showCover();
+  });
+  const status = () => art ? A.st(art) : "draft";
+  function stats() {
+    const text = $("f-content").value;
+    $("words").textContent = A.words(text) + " so'z"; $("sum-count").textContent = $("f-summary").value.length + " / 300";
+    $("stat-status").textContent = status() === "published" ? "Saytda" : "Qoralama"; $("stat-read").textContent = A.readTime(text);
+    $("stat-date").textContent = art && art.date ? art.date : "—";
+    $("btn-main").textContent = status() === "published" ? "Saqlash" : "Chop etish";
+    $("btn-alt").textContent = status() === "published" ? "Qoralamaga qaytarish" : "Qoralama saqlash";
+    $("btn-delete").hidden = !art;
+  }
+  const mark = (t, c) => { $("save-text").textContent = t; $("save-icon").style.color = c; };
+  const setBusy = on => { busy = on; ["btn-main", "btn-alt", "btn-delete"].forEach(id => $(id).disabled = on); };
+  fill(); stats();
+  ["f-title", "f-summary", "f-content", "f-author", "f-category"].forEach(id => $(id).addEventListener("input", () => { dirty = true; mark("Saqlanmagan o'zgarishlar", "var(--terra)"); stats(); }));
+  window.addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+  $("back").addEventListener("click", e => { if (dirty && !confirm("Saqlanmagan o'zgarishlar bor. Baribir chiqasizmi?")) e.preventDefault(); else dirty = false; });
+
+  async function save(target) {
+    if (busy) return;
+    const d = { id: art && art.id, title: $("f-title").value, category: $("f-category").value, author: $("f-author").value,
+      summary: $("f-summary").value, content: $("f-content").value, status: target,
+      cover: coverFile, removeCover };
+    if (!d.title.trim()) { alert("Iltimos, sarlavhani kiriting."); $("f-title").focus(); return; }
+    if (target === "published") {
+      if (!d.summary.trim()) { alert("Chop etish uchun qisqa tavsif kerak."); $("f-summary").focus(); return; }
+      if (A.words(d.content) < 30) { alert("Matn juda qisqa: kamida 30 so'z bo'lishi kerak."); $("f-content").focus(); return; }
+    }
+    const wasNew = !art, was = art ? A.st(art) : "draft";
+    setBusy(true); mark("Saqlanmoqda…", "var(--terra)");
+    let saved;
+    try { saved = await A.save(d); } catch (e) { mark("Saqlanmadi", "var(--terra)"); alert((e && e.message) || "Saqlashda xatolik yuz berdi."); setBusy(false); return; }
+    setBusy(false);
+    art = saved; dirty = false; mark("Saqlandi ✓", "var(--green)");
+    coverFile = null; removeCover = false; if (previewUrl) { URL.revokeObjectURL(previewUrl); previewUrl = null; }
+    if (wasNew) history.replaceState(null, "", "article-edit.html?id=" + encodeURIComponent(saved.id));
+    Admin.done((target === "published" ? (was === "published" ? "Maqola yangilandi: " : "Maqola chop etildi: ") : "Maqola qoralama sifatida saqlandi: ") + saved.title);
+    fill(); stats();
+  }
+  $("btn-main").addEventListener("click", () => save("published"));
+  $("btn-alt").addEventListener("click", () => save("draft"));
+  $("btn-delete").addEventListener("click", () => Admin.dialog({ title: "Maqolani o'chirish", text: "«" + art.title + "» butunlay o'chiriladi.", ok: "O'chirish", danger: true,
+    onOk: async () => { try { await A.remove(art.id); } catch (e) { alert((e && e.message) || "O'chirishda xatolik yuz berdi."); return; }
+      Admin.done("Maqola o'chirildi: " + art.title); dirty = false; location.href = "articles.html"; } }));
+})();
+</script>
+</body>
+</html>

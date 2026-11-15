@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sozlamalar — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main"></main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script>
+const num = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const som = n => num(n) + " so'm";
+(async () => {
+  let d = null, err = "";
+  try { d = await AdminApi.request("/auth/admin/system-settings/"); } catch (e) { err = e.message; }
+  const v = f => d ? f(d) : "—";
+  Admin.page({ title: "Sozlamalar", sub: err ? "Ma'lumotni yuklab bo'lmadi: " + err : "Joriy sozlamalar (faqat o'qish). Qiymatlar serverning .env faylidan olinadi: o'zgartirish uchun faylni tahrirlab, serverni qayta ishga tushiring.", sections: [
+    { type: "kv", title: "Hisob-kitob qoidalari", rows: [
+      ["Yozuvchi ulushi (WRITER_SHARE_PERCENT)", v(x => x.writer_percent + "%")],
+      ["Platforma ulushi", v(x => (100 - x.writer_percent) + "%")],
+      ["Hisob kursi (COIN_RATE_SOM)", v(x => "1 tanga = " + som(x.rate_som))],
+      ["Kurs va ulush o'zgarsa", "Faqat yangi bob ochilishlariga ta'sir qiladi; eski yozuvlar o'zgarmaydi"]] },
+    { type: "kv", title: "Yozuvchilarga to'lov chegaralari", rows: [
+      ["Eng kam yechish summasi (MIN_WITHDRAWAL_SOM)", v(x => som(x.min_withdrawal_som))],
+      ["Direktor tasdig'i kerak bo'lgan summa (DIRECTOR_APPROVAL_SOM)", v(x => som(x.director_approval_som) + " dan yuqori")]] },
+    { type: "kv", title: "Hamyonga qo'lda tanga qo'shish", rows: [
+      ["Moliyachi o'zi qo'sha oladigan miqdor (WALLET_ADJUSTMENT_FINANCE_LIMIT_COINS)", v(x => x.adjustment_finance_limit_coins + " tangagacha")],
+      ["Bir martalik eng katta miqdor, direktor uchun ham (WALLET_ADJUSTMENT_MAX_COINS)", v(x => x.adjustment_max_coins + " tanga")],
+      ["O'z hisobiga qo'shish", "Taqiqlangan (hech kim uchun)"]] },
+    { type: "kv", title: "Tizim holati", rows: [
+      ["Click to'lovi", v(x => x.click_configured ? "Sozlangan" : "Sozlanmagan (CLICK_* kalitlari yo'q)")],
+      ["Payme to'lovi", v(x => x.payme_connected ? "Ulangan" : "Ulanmagan")],
+      ["Sinov to'lovi (PAYMENTS_MOCK)", v(x => x.mock_enabled ? "Yoqilgan: bepul tanga beradi, haqiqiy tushum emas" : "O'chiq")],
+      ["Email yuborish", v(x => x.email_smtp ? "SMTP orqali (haqiqiy xat)" : "Konsolga yoziladi (xat yuborilmaydi)")],
+      ["Debug rejimi (DEBUG)", v(x => x.debug ? "Yoqilgan: faqat ishlab chiqish uchun, productionda o'chiring" : "O'chiq")]] }
+  ] });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+# Production (server) uchun. Ishga tushirish:
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Kerakli fayllar:
+#   .env                      -> DOMAIN va POSTGRES_PASSWORD (loyiha ildizida)
+#   backend/.env.production   -> SECRET_KEY, EMAIL_*, DEMO_MODE va h.k. (gitga qo'shilmaydi)
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    logging: *default-logging
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-penaura}
+      POSTGRES_USER: ${POSTGRES_USER:-penaura_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?.env faylda POSTGRES_PASSWORD yozing}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # ports: yo'q. Baza tashqaridan ochiq emas, faqat backend ko'ra oladi.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    logging: *default-logging
+    env_file: ./backend/.env.production
+    environment:
+      DEBUG: "False"
+      DB_NAME: ${POSTGRES_DB:-penaura}
+      DB_USER: ${POSTGRES_USER:-penaura_user}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: db
+      DB_PORT: "5432"
+      ALLOWED_HOSTS: ${DOMAIN:?.env faylda DOMAIN yozing},admin.${DOMAIN},backend
+      CORS_ALLOWED_ORIGINS: https://${DOMAIN},https://admin.${DOMAIN}
+      CSRF_TRUSTED_ORIGINS: https://${DOMAIN},https://admin.${DOMAIN}
+      FRONTEND_URL: https://${DOMAIN}/
+      BEHIND_PROXY: "True"
+    depends_on:
+      db:
+        condition: service_healthy
+    # ports: yo'q. Backendga faqat Caddy orqali kiriladi.
+    volumes:
+      - media_data:/app/media
+      - static_data:/app/staticfiles
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    logging: *default-logging
+    depends_on:
+      - backend
+    environment:
+      DOMAIN: ${DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./frontend:/srv/frontend:ro
+      - ./admin:/srv/admin:ro
+      - media_data:/srv/media:ro
+      - static_data:/srv/static:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  media_data:
+  static_data:
+  caddy_data:
+  caddy_config:

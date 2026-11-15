@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tanga sotuvi — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main"></main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script>
+const B = Admin.B;
+const num = n => String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const som = n => num(n) + " so'm";
+const when = v => { if (!v) return "—"; const d = new Date(v); return d.toLocaleDateString("uz-UZ") + " " + String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+(async () => {
+  let d = null, err = "";
+  try { d = await AdminApi.request("/auth/admin/coin-sales/"); } catch (e) { err = e.message; }
+  const stats = [
+    ["Faol paketlar", d ? String(d.packages.length) : "—"],
+    ["Hisob kursi", d ? "1 tanga = " + som(d.rate_som) : "—", "Server sozlamasidan olinadi"],
+    ["Shu oy tushum", d ? som(d.revenue_month_som) : "—", d ? d.orders_month + " ta to'langan xarid" : ""],
+    ["Shu oy sotilgan tanga", d ? num(d.coins_sold_month) : "—", d && d.unfinished_orders ? d.unfinished_orders + " ta buyurtma hali to'lanmagan" : ""]
+  ];
+  if (d && d.mock_paid_count) stats.push(["Test to'lovlar", String(d.mock_paid_count), som(d.mock_paid_som) + " haqiqiy tushum emas", "down"]);
+  Admin.page({ title: "Tanga sotuvi", sub: err ? "Ma'lumotni yuklab bo'lmadi: " + err : "Tanga paketlari va shu oydagi sotuv. Narxlar xavfsizlik uchun faqat serverda belgilanadi.", sections: [
+    { type: "stats", items: stats },
+    { type: "table", title: "Tanga paketlari", cols: ["Paket", "Bonus", { h: "Narxi", mono: 1 }, { h: "Shu oy sotilgan", mono: 1 }, { h: "Shu oy tushum", mono: 1 }],
+      rows: d ? d.packages.map(p => [p.coins + " tanga", p.bonus ? "+" + p.bonus + " tanga" : "—", som(p.price_som), num(p.sold_month) + " ta", som(p.revenue_month_som)]) : [] },
+    { type: "table", title: "Oxirgi xaridlar", search: true, cols: [{ h: "ID", mono: 1 }, "Foydalanuvchi", "Paket", { h: "Summa", mono: 1 }, "Provayder", { h: "Sana", mono: 1 }],
+      rows: d ? d.purchases.map(o => ["#" + o.id, o.user, o.coins + (o.bonus_coins ? " + " + o.bonus_coins : "") + " tanga", som(o.amount_som), B(o.provider_label, o.provider === "mock" ? "wait" : "ok"), when(o.paid_at)]) : [] }
+  ] });
+})();
+</script>
+</body>
+</html>

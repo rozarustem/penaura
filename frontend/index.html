@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penaura — Where Untold Stories Come to Life</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+    <nav class="links">
+      <a href="index.html">Discover</a>
+      <a href="fiction.html">Fiction</a>
+      <a href="poem.html">Poetry</a>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+    </nav>
+    <div class="nav-right">
+      <span class="search-link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Search</span>
+      <button class="btn-signin">Sign In</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero section--no-top-border">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="badge">STORIES DESERVE TO BE HEARD</span>
+      <h1 class="headline">Where Untold Stories<br>Come to <span class="accent" data-i18n="Life (headline)">Life</span></h1>
+      <p class="hero-desc">Find stories that move you — waiting to be read, yet to be discovered. Penaura is where new writers find their first readers, and readers discover their next favorite author.</p>
+      <div class="cta-row">
+        <button type="button" class="btn-primary" id="btn-hero-explore" style="cursor:pointer;">Explore stories →</button>
+        <button type="button" class="btn-secondary" id="btn-hero-write" style="cursor:pointer;">📖 Start writing</button>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><div class="num">4,200+</div><div class="label">WRITERS</div></div>
+        <div class="stat"><div class="num">18K+</div><div class="label">STORIES</div></div>
+        <div class="stat"><div class="num">120K</div><div class="label">READERS</div></div>
+      </div>
+    </div>
+    <div class="hero-images">
+      <div class="ph ph-1">image 1</div>
+      <div class="ph">image 2</div>
+      <div class="ph">image 3</div>
+    </div>
+  </div>
+</section>
+
+<section id="discover">
+  <div class="wrap">
+    <div class="section-head" style="flex-wrap:wrap; gap:1rem; align-items:center;">
+      <div>
+        <h2 style="font-family:var(--font-display); font-size:2.2rem; margin:0 0 0.3rem; color:var(--espresso);">Discover Stories</h2>
+        <p style="margin:0; font-size:0.9rem; color:var(--espresso-soft); font-family:var(--font-mono);">Platformadagi barcha yozuvchilarning kitoblari va hikoyalari</p>
+      </div>
+      <span id="all-stories-counter" class="see-all" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--terracotta); font-weight:600;">Barcha hikoyalar yuklanmoqda...</span>
+    </div>
+    <div class="pills">
+      <button type="button" class="pill active" data-genre="all">All</button>
+      <button type="button" class="pill" data-genre="popular">Popular</button>
+      <button type="button" class="pill" data-genre="fiction">Fiction</button>
+      <button type="button" class="pill" data-genre="poetry">Poetry</button>
+      <button type="button" class="pill" data-genre="romance">Romance</button>
+      <button type="button" class="pill" data-genre="mystery">Mystery</button>
+      <button type="button" class="pill" data-genre="sci-fi">Sci-Fi</button>
+      <button type="button" class="pill" data-genre="non-fiction">Non-fiction</button>
+    </div>
+    <div class="work-grid" id="index-works-grid">
+      <!-- Dynamic books from Storage.getBooks() rendered by js/index.js -->
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Latest Stories</h2>
+      <a class="see-all" href="#">Read more articles →</a>
+    </div>
+    <div class="latest-grid">
+      <div class="latest-main">
+        <div class="ph">featured image</div>
+        <div class="genre">TRAVEL ESSAY</div>
+        <h3>A Morning in Samarkand: Notes from the Old City</h3>
+        <p>Walking through the winding alleys of Samarkand at dawn, when the air still carries the cool breath of night and the vendors are just beginning to arrange their saffron and spices…</p>
+        <div class="byline">Feruza Madaminova · Sep 12, 2026 · 8 min read</div>
+      </div>
+      <div class="side-list">
+        <div class="side-item">
+          <div class="ph">img</div>
+          <div>
+            <div class="genre">PERSONAL ESSAY</div>
+            <h4>The Language We Forgot to Teach Our Children</h4>
+            <div class="byline">Nilufar Ergasheva · 5 min read</div>
+          </div>
+        </div>
+        <div class="side-item">
+          <div class="ph">img</div>
+          <div>
+            <div class="genre">POETRY REVIEW</div>
+            <h4>10 Poems That Broke My Heart and Mended It Again</h4>
+            <div class="byline">Sardor Umarov · 6 min read</div>
+          </div>
+        </div>
+        <div class="side-item">
+          <div class="ph">img</div>
+          <div>
+            <div class="genre">WRITING CRAFT</div>
+            <h4>Writing on a Budget: Craft Over Currency</h4>
+            <div class="byline">Kamola Yodgorova · 7 min read</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Author Spotlight</h2>
+      <a class="see-all" href="#">See all authors →</a>
+    </div>
+    <div class="author-grid">
+      <div class="author-card">
+        <div class="author-top">
+          <div class="avatar"></div>
+          <div>
+            <h3>Maryam Rahimova</h3>
+            <div class="sub">Literary Fiction · Tashkent · ★★★★★ 4,312 followers</div>
+          </div>
+        </div>
+        <p class="bio">Maryam writes about family, memory, and the quiet erosions of time. Her debut novella <i>"The Apricot Season"</i> was read over 40,000 times in its first month, praised for its luminous prose and devastating emotional honesty.</p>
+        <div class="author-stats">
+          <div><div class="num">47</div><div class="label">WORKS</div></div>
+          <div><div class="num">120K</div><div class="label">READS</div></div>
+          <div><div class="num">98%</div><div class="label">LIKED</div></div>
+        </div>
+        <button class="btn-follow">♡ Follow & Read</button>
+      </div>
+      <div class="featured-novella">
+        <div class="ph">novella cover</div>
+        <div class="genre">LITERARY FICTION</div>
+        <h3>The Apricot Season</h3>
+        <blockquote>"She counted the jars each August — an inheritance of labor, of summers past. This year there were fewer hands to help, and the fruit was sweeter than she could bear."</blockquote>
+        <a class="start-link" href="#">Start reading →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="newsletter">
+  <div class="eyebrow">STAY LITERARY</div>
+  <h2>Get Stories Worth Reading Straight to Your Inbox</h2>
+  <p>Subscribe to our weekly digest — curated fiction, poetry, and essays from Penaura's best writers. No noise, just literature.</p>
+  <div class="subscribe-row">
+    <input type="email" placeholder="Your email address">
+    <button>Subscribe</button>
+  </div>
+  <div class="fine">Subscribe and read our <a href="about.html">Privacy Policy</a>.</div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+      <p>A home for writers and the readers who love them.</p>
+      <div class="social-row">
+        <span>Fb</span><span>Tw</span><span>Ig</span><span>Yt</span>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>DISCOVER</h4>
+      <a href="fiction.html">Fiction</a><a href="poem.html">Poetry</a><a href="index.html#discover">Essays</a><a href="index.html#discover">Non-fiction</a>
+    </div>
+    <div class="footer-col">
+      <h4>WRITERS</h4>
+      <a href="upload.html">Start Writing</a><a href="blog.html">Writer Tips</a><a href="blog.html">Publishing Guide</a><a href="blog.html">Workshops</a>
+    </div>
+    <div class="footer-col">
+      <h4>TOP GENRES</h4>
+      <a href="fiction.html?sub=literary">Literary Fiction</a><a href="index.html#discover">Romance</a><a href="index.html#discover">Mystery</a><a href="index.html#discover">Sci-Fi</a>
+    </div>
+    <div class="footer-col">
+      <h4>HELP</h4>
+      <a href="about.html">About Penaura</a><a href="about.html">Careers</a><a href="about.html">Contact</a><a href="about.html">Terms</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Penaura. All rights reserved.</span>
+    <span>Where every word finds its reader.</span>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/api-client.js"></script>
+<script src="js/dom-utils.js"></script>
+<script src="js/auth-nav.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>

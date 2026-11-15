@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/blog.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+    <nav class="links">
+      <a href="index.html#discover">Discover</a>
+      <a href="fiction.html">Fiction</a>
+      <a href="poem.html">Poetry</a>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+    </nav>
+    <div class="nav-right">
+      <span class="search-link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Search</span>
+      <button class="btn-signin">Sign In</button>
+    </div>
+  </div>
+</header>
+
+<section class="page-hero section--no-top-border">
+  <div class="wrap">
+    <h1 id="blog-page-title">The Penaura Blog</h1>
+    <p>Writing tips, author interviews, and news from the Penaura team — for writers building their craft and readers who love the process behind the page.</p>
+  </div>
+</section>
+
+<section class="section--flush-top" id="blog-hub">
+  <div class="wrap">
+    <div class="pills">
+      <button class="pill active" data-category="all">All</button>
+      <button class="pill" data-category="writing tips">Writing Tips</button>
+      <button class="pill" data-category="author interview">Author Interview</button>
+      <button class="pill" data-category="publishing guide">Publishing Guide</button>
+      <button class="pill" data-category="community">Community</button>
+      <button class="pill" data-category="platform news">Platform News</button>
+    </div>
+
+    <div class="blog-featured">
+      <div class="ph">featured image</div>
+      <div>
+        <div class="category">PLATFORM NEWS</div>
+        <h2>How Penaura Chooses Its Author Spotlight Each Month</h2>
+        <p>A behind-the-scenes look at how our editorial team discovers new voices, reads through hundreds of submissions, and decides which stories deserve a wider audience.</p>
+        <div class="byline">Penaura Team · Sep 18, 2026 · 6 min read</div>
+      </div>
+    </div>
+
+    <div class="blog-grid">
+      <div class="blog-card">
+        <div class="ph">image</div>
+        <div class="category">WRITING TIPS</div>
+        <h3>Five Ways to Beat Writer's Block This Week</h3>
+        <p>Small, practical exercises that have helped Penaura writers get unstuck — no motivational fluff, just things that actually work.</p>
+        <div class="byline">Kamola Yodgorova · 5 min read</div>
+      </div>
+      <div class="blog-card">
+        <div class="ph">image</div>
+        <div class="category">AUTHOR INTERVIEW</div>
+        <h3>Inside Maryam Rahimova's Writing Routine</h3>
+        <p>The author of 'The Apricot Season' talks about discipline, deleted drafts, and why she never writes before noon.</p>
+        <div class="byline">Penaura Team · 8 min read</div>
+      </div>
+      <div class="blog-card">
+        <div class="ph">image</div>
+        <div class="category">PUBLISHING GUIDE</div>
+        <h3>Your First Story: A Beginner's Checklist</h3>
+        <p>Everything to check before you hit publish — formatting, tagging, and how to write a description that actually gets clicks.</p>
+        <div class="byline">Sardor Umarov · 4 min read</div>
+      </div>
+      <div class="blog-card">
+        <div class="ph">image</div>
+        <div class="category">COMMUNITY</div>
+        <h3>What Our Readers Are Loving This Month</h3>
+        <p>A roundup of the stories, poems, and essays that resonated most with the Penaura community in September.</p>
+        <div class="byline">Penaura Team · 3 min read</div>
+      </div>
+      <div class="blog-card">
+        <div class="ph">image</div>
+        <div class="category">WRITING CRAFT</div>
+        <h3>The Quiet Power of a Good First Line</h3>
+        <p>Why the opening sentence matters more than you think, and five examples that get it exactly right.</p>
+        <div class="byline">Nilufar Ergasheva · 6 min read</div>
+      </div>
+      <div class="blog-card">
+        <div class="ph">image</div>
+        <div class="category">PLATFORM NEWS</div>
+        <h3>Introducing Genre Pages: Fiction, Poetry, and More</h3>
+        <p>A look at why we built dedicated spaces for each genre, and what's coming next for readers and writers alike.</p>
+        <div class="byline">Penaura Team · 3 min read</div>
+      </div>
+    </div>
+
+    <div class="pagination">
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn">···</button>
+      <button class="page-btn">7</button>
+    </div>
+  </div>
+</section>
+
+<article class="blog-post wrap" id="blog-post" hidden aria-labelledby="blog-post-title">
+  <a class="blog-post-back" href="blog.html">&larr; All stories</a>
+  <p class="category" id="blog-post-category"></p>
+  <h1 id="blog-post-title"></h1>
+  <div class="byline" id="blog-post-byline"></div>
+  <figure class="blog-post-cover" id="blog-post-cover" hidden><img alt=""></figure>
+  <div class="blog-post-content" id="blog-post-content"></div>
+</article>
+
+<div class="newsletter">
+  <div class="eyebrow">STAY LITERARY</div>
+  <h2>Get Stories Worth Reading Straight to Your Inbox</h2>
+  <p>Subscribe to our weekly digest — curated fiction, poetry, and essays from Penaura's best writers. No noise, just literature.</p>
+  <div class="subscribe-row">
+    <input type="email" placeholder="Your email address">
+    <button>Subscribe</button>
+  </div>
+  <div class="fine">Subscribe and read our <a href="about.html">Privacy Policy</a>.</div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+      <p>A home for writers and the readers who love them.</p>
+      <div class="social-row">
+        <span>Fb</span><span>Tw</span><span>Ig</span><span>Yt</span>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>DISCOVER</h4>
+      <a href="fiction.html">Fiction</a><a href="poem.html">Poetry</a><a href="index.html#discover">Essays</a><a href="index.html#discover">Non-fiction</a>
+    </div>
+    <div class="footer-col">
+      <h4>WRITERS</h4>
+      <a href="upload.html">Start Writing</a><a href="blog.html">Writer Tips</a><a href="blog.html">Publishing Guide</a><a href="blog.html">Workshops</a>
+    </div>
+    <div class="footer-col">
+      <h4>TOP GENRES</h4>
+      <a href="fiction.html?sub=literary">Literary Fiction</a><a href="index.html#discover">Romance</a><a href="index.html#discover">Mystery</a><a href="index.html#discover">Sci-Fi</a>
+    </div>
+    <div class="footer-col">
+      <h4>HELP</h4>
+      <a href="about.html">About Penaura</a><a href="about.html">Careers</a><a href="about.html">Contact</a><a href="about.html">Terms</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Penaura. All rights reserved.</span>
+    <span>Where every word finds its reader.</span>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/api-client.js"></script>
+<script src="js/dom-utils.js"></script>
+<script src="js/auth-nav.js"></script>
+<script src="js/blog.js"></script>
+</body>
+</html>

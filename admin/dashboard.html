@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moliya paneli — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <h1>Moliya paneli</h1>
+        <p class="sub">Korporativ hisobdagi pul, o'quvchilar tangalari va yozuvchilarga to'lovlar.</p>
+      </div>
+      <button class="btn" type="button" id="btn-export">Hisobotni yuklash</button>
+    </div>
+
+    <section class="grid-top">
+      <div class="balance">
+        <div class="label">Korporativ hisobdagi umumiy balans</div>
+        <div class="big" id="bal-total"></div>
+        <button class="eye" id="eye" type="button" aria-pressed="false" aria-label="Summalarni ko'rsatish">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <div class="mono">2020 8000 •••• •••• 4417</div>
+        <div class="pair">
+          <div>Kirim, shu oy<b id="bal-in"></b></div>
+          <div>Chiqim, shu oy<b id="bal-out"></b></div>
+        </div>
+      </div>
+      <div class="card coins">
+        <div class="sub">O'quvchilar hisobidagi tangalar</div>
+        <div class="big" id="coins-wallets">—</div>
+        <div class="kv"><span>Shu oy sotilgan</span><span id="coins-sold">—</span></div>
+        <div class="kv"><span>Boblarga sarflangan (shu oy)</span><span id="coins-spent">—</span></div>
+        <div class="kv"><span>Yozuvchilarga to'lanishi kerak</span><span id="writers-payable">—</span></div>
+      </div>
+    </section>
+
+    <section class="grid-mid">
+      <div class="card">
+        <h2>Kirim va chiqim</h2>
+        <div class="legend"><span><i class="in"></i>Kirim (tanga sotuvi)</span><span><i class="out"></i>Chiqim (yozuvchilar, komissiya)</span></div>
+        <div class="chart" id="chart" role="img" aria-label="Oxirgi 6 oylik kirim va chiqim grafigi"></div>
+      </div>
+      <div class="card">
+        <h2>Tanga paketlari</h2>
+        <p class="sub" style="margin-bottom:8px">Shu oy nechta sotilgani</p>
+        <div id="packs"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Pulning bo'linishi: yozuvchi / platforma</h2>
+      <p class="sub" id="split-sub" style="margin-bottom:8px"></p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Vaqt</th><th>O'quvchi</th><th>Asar</th><th>Jami</th><th>Yozuvchi</th><th>Platforma</th></tr></thead>
+          <tbody id="splits"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Oxirgi tranzaksiyalar</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Amal</th><th>Foydalanuvchi</th><th>Summa</th><th>Vaqt</th><th>Holat</th></tr></thead>
+          <tbody id="tx"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="js/roles.js"></script>
+<script>
+  /* Ma'lumotlar serverdan olinadi: GET /auth/admin/finance/ */
+  let DATA = { balance: 0, inThisMonth: 0, outThisMonth: 0, months: [], inflow: [], outflow: [], packs: [], tx: [], splits: [] };
+  const STATUS = { ok:["Bajarildi","b-ok"], wait:["Kutilmoqda","b-wait"], err:["Xato","b-err"] };
+  const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  const MONTHS = ["Yan","Fev","Mar","Apr","May","Iyun","Iyul","Avg","Sen","Okt","Noy","Dek"];
+  const hm = v => { const d = new Date(v); return d.toLocaleDateString("uz-UZ") + " " + String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); };
+  const money = n => (n > 0 ? "+" : n < 0 ? "−" : "") + fmt(Math.abs(n)) + " so'm";
+  const td = (tr, text, cls) => { const c = document.createElement("td"); c.textContent = text; if (cls) c.className = cls; tr.appendChild(c); };
+
+  function apply(f) {
+    DATA = {
+      balance: f.balance_som, inThisMonth: f.in_month_som, outThisMonth: f.out_month_som,
+      months: f.chart.map(c => MONTHS[Number(c.month.slice(5)) - 1]),
+      inflow: f.chart.map(c => Math.round(c.in_som / 10000) / 100),
+      outflow: f.chart.map(c => Math.round(c.out_som / 10000) / 100),
+      packs: f.packs.map(p => [p.package + " tanga", p.count]),
+      tx: f.events.map(e => [e.id, e.label, e.user, e.kind === "split" ? fmt(e.som) + " so'm" : money(e.som), hm(e.when), "ok"]),
+      splits: f.splits
+    };
+    document.getElementById("coins-wallets").textContent = fmt(f.coins_in_wallets) + " tanga";
+    document.getElementById("coins-sold").textContent = fmt(f.coins_sold_month) + " tanga";
+    document.getElementById("coins-spent").textContent = fmt(f.coins_spent_month) + " tanga";
+    document.getElementById("writers-payable").textContent = fmt(f.writers_payable_som) + " so'm";
+    document.getElementById("split-sub").textContent =
+      "Bob ochilgan zahoti pul " + f.writer_percent + "% yozuvchiga va " + (100 - f.writer_percent) + "% platformaga bo'linadi (1 tanga = " + fmt(f.rate_som) +
+      " so'm). Platforma daromadi: jami " + fmt(f.platform_total_som) + " so'm, shu oy " + fmt(f.platform_month_som) + " so'm.";
+  }
+
+
+  function init() {
+    const sp = document.getElementById("splits");
+    if (!DATA.splits.length) { const tr = document.createElement("tr"); td(tr, "Hali bob ochilmagan."); sp.appendChild(tr); }
+    DATA.splits.forEach(r => { const tr = document.createElement("tr"); td(tr, hm(r.created_at), "mono"); td(tr, r.reader); td(tr, r.book + " — " + r.chapter + " (" + r.writer + ")"); td(tr, fmt(r.gross_som) + " so'm", "mono"); td(tr, "+" + fmt(r.writer_som), "mono"); td(tr, "+" + fmt(r.platform_som) + " so'm", "mono pos"); sp.appendChild(tr); });
+    const shown = { v: false };
+    const total = document.getElementById("bal-total"), inn = document.getElementById("bal-in"), out = document.getElementById("bal-out");
+    const eye = document.getElementById("eye");
+    function paint() {
+      total.textContent = shown.v ? fmt(DATA.balance) + " so'm" : "•••• •••• so'm";
+      inn.textContent = shown.v ? fmt(DATA.inThisMonth) + " so'm" : "•••• •••";
+      out.textContent = shown.v ? fmt(DATA.outThisMonth) + " so'm" : "•••• •••";
+      eye.setAttribute("aria-pressed", String(shown.v));
+      eye.setAttribute("aria-label", shown.v ? "Summalarni yashirish" : "Summalarni ko'rsatish");
+    }
+    eye.addEventListener("click", () => { shown.v = !shown.v; paint(); });
+    paint();
+
+    const max = Math.max(1, ...DATA.inflow, ...DATA.outflow);
+    const chart = document.getElementById("chart");
+    DATA.months.forEach((m, i) => {
+      const col = document.createElement("div"); col.className = "col";
+      const bars = document.createElement("div"); bars.className = "bars";
+      [["in", DATA.inflow[i]], ["out", DATA.outflow[i]]].forEach(([c, v]) => {
+        const b = document.createElement("i"); b.className = c;
+        b.style.height = (v / max * 100) + "%"; b.title = v + " mln so'm"; bars.appendChild(b);
+      });
+      const l = document.createElement("small"); l.textContent = m;
+      col.append(bars, l); chart.appendChild(col);
+    });
+
+    const pmax = Math.max(1, ...DATA.packs.map(p => p[1]));
+    const packs = document.getElementById("packs");
+    DATA.packs.forEach(([name, n]) => {
+      const row = document.createElement("div"); row.className = "pk";
+      const a = document.createElement("span"); a.textContent = name;
+      const t = document.createElement("div"); t.className = "track";
+      const f = document.createElement("i"); f.style.width = (n / pmax * 100) + "%"; t.appendChild(f);
+      const c = document.createElement("span"); c.textContent = fmt(n);
+      row.append(a, t, c); packs.appendChild(row);
+    });
+
+    const tx = document.getElementById("tx");
+    DATA.tx.forEach(r => {
+      const tr = document.createElement("tr");
+      r.slice(0, 5).forEach((v, i) => {
+        const td = document.createElement("td"); td.textContent = v;
+        if (i === 0 || i === 3 || i === 4) td.className = "mono";
+        if (i === 3) td.classList.add(v.startsWith("+") ? "pos" : v.startsWith("−") ? "neg" : "x");
+        tr.appendChild(td);
+      });
+      const td = document.createElement("td"), b = document.createElement("span");
+      b.className = "badge " + STATUS[r[5]][1]; b.textContent = STATUS[r[5]][0];
+      td.appendChild(b); tr.appendChild(td); tx.appendChild(tr);
+    });
+
+    document.getElementById("btn-export").addEventListener("click", () => window.print());
+  }
+
+  const session = requireAccess();
+  if (session) {
+    renderSidebar(session);
+    AdminApi.request("/auth/admin/finance/").then(apply).catch(e => Admin_err(e)).finally(init);
+  }
+  function Admin_err(e) { const m = document.querySelector(".page-head .sub"); if (m) m.textContent = "Ma'lumotni yuklab bo'lmadi: " + e.message; }
+</script>
+</body>
+</html>

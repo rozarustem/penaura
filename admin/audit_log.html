@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foydalanuvchilar — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main"></main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script src="js/audit-format.js"></script>
+<script>
+(async () => {
+  if (!getSession()) { location.replace("login.html"); return; }
+  let list;
+  try { list = await AdminApi.request("/auth/admin/audit/"); } catch (e) {
+    Admin.page({ title: "Ma'lumotni yuklab bo'lmadi", sub: (e && e.message) || "Server bilan aloqa yo'q. Backend ishlayotganini tekshiring.", sections: [] });
+    return;
+  }
+  const rows = list.map(a => [AuditFormat.when(a.created_at), a.actor || "Tizim", AuditFormat.role(a.actor_role), AuditFormat.text(a)]);
+  Admin.page({ title: "Audit jurnali", sub: "Kim, qachon va nimani o'zgartirgan. Yozuvchilar serverda saqlanadi va o'chirilmaydi (oxirgi " + list.length + " ta ko'rsatilgan).", sections: [
+    { type: "table", title: "Oxirgi amallar", search: true, size: 15, cols: [{ h: "Vaqt", mono: 1 }, "Kim", "Rol", "Amal"], rows }
+  ] });
+})();
+</script>
+</body>
+</html>

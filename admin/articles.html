@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main"></main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script src="js/articles.js"></script>
+<script>
+const A = Articles, B = Admin.B;
+const edit = id => { location.href = "article-edit.html" + (id ? "?id=" + encodeURIComponent(id) : ""); };
+/* Amal bajarilgach ro'yxat serverdan qayta yuklanadi; xatolik bo'lsa xabar ko'rsatiladi. */
+const run = async (fn, okText) => { try { await fn(); Admin.done(okText); location.reload(); } catch (e) { alert((e && e.message) || "Amalni bajarib bo'lmadi."); } };
+
+A.boot(() => {
+  const list = A.all(), live = list.filter(a => A.st(a) === "published").length;
+
+  const rows = list.map(a => {
+    const pub = A.st(a) === "published";
+    return [a.title, a.category, a.author, a.date || "—", pub ? B("Saytda", "ok") : B("Qoralama", "wait"), { btns: [
+      { text: "Tahrirlash", kind: "primary", fn: () => edit(a.id) },
+      pub ? { text: "Qoralamaga qaytarish", fn: () => Admin.dialog({ title: "Maqolani saytdan olish", text: "«" + a.title + "» blogdan yo'qoladi va qoralama bo'ladi.", ok: "Saytdan olish", danger: true,
+              onOk: () => run(() => A.setStatus(a.id, "draft"), "Maqola saytdan olindi: " + a.title) }) }
+          : { text: "Chop etish", fn: () => Admin.dialog({ title: "Maqolani chop etish", text: "«" + a.title + "» blogda o'quvchilarga ko'rinadi.", ok: "Chop etish",
+              onOk: () => run(() => A.setStatus(a.id, "published"), "Maqola chop etildi: " + a.title) }) },
+      { text: "O'chirish", kind: "danger-o", fn: () => Admin.dialog({ title: "Maqolani o'chirish", text: "«" + a.title + "» butunlay o'chiriladi.", ok: "O'chirish", danger: true,
+          onOk: () => run(() => A.remove(a.id), "Maqola o'chirildi: " + a.title) }) }] }];
+  });
+
+  Admin.page({ title: "Blog", sub: "Platformadagi blog maqolalari. Chop etilgan maqolalar blog sahifasida ko'rinadi, qoralamalar faqat shu yerda.",
+    actions: [{ text: "Yangi maqola", kind: "primary", fn: () => edit() }],
+    sections: [
+      { type: "stats", items: [["Jami maqolalar", String(list.length)], ["Saytda", String(live)], ["Qoralama", String(list.length - live)]] },
+      { type: "table", title: "Maqolalar", search: true, onRow: null, cols: ["Sarlavha", "Toifa", "Muallif", { h: "Sana", mono: 1 }, "Holat", "Amal"], rows }
+    ] });
+});
+</script>
+</body>
+</html>

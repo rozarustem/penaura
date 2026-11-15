@@ -1,0 +1,224 @@
+/* Settings page styles */
+
+/* ---- Profil bo'limi: avatar, holat xabarlari ---- */
+.settings-page .avatar-row {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 1rem;
+}
+
+.settings-page .avatar-preview {
+	width: 72px;
+	height: 72px;
+	flex: 0 0 72px;
+	overflow: hidden;
+	border-radius: 50%;
+	background: var(--terracotta-soft);
+}
+
+.settings-page .avatar-preview img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.settings-page .avatar-actions {
+	min-width: 0;
+}
+
+.settings-page .btn-secondary {
+	padding: 0.5rem 0.85rem;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	background: transparent;
+	color: var(--espresso);
+	cursor: pointer;
+	font-size: 0.78rem;
+}
+
+.settings-page .avatar-hint,
+.settings-page .field-hint {
+	margin-top: 0.3rem;
+	color: var(--espresso-soft);
+	font-size: 0.72rem;
+}
+
+.settings-page .settings-form .form-group--wide {
+	grid-column: 1 / -1;
+}
+
+.settings-page .settings-form input[readonly] {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+
+.settings-page .btn-save:disabled,
+.settings-page .btn-danger:disabled {
+	cursor: not-allowed;
+	opacity: 0.55;
+}
+
+.settings-page .form-status {
+	grid-column: 1 / -1;
+	min-height: 1.1em;
+	font-size: 0.8rem;
+}
+
+.settings-page .avatar-actions .form-status {
+	margin-top: 0.3rem;
+}
+
+.settings-page .form-status.is-ok { color: #2E7D32; }
+.settings-page .form-status.is-error { color: #A5432E; }
+
+/* Maydonlar tepadan tekislansin (email ostidagi izoh qo'shni maydonni pastga surmasin) */
+.settings-page .settings-form {
+	align-items: start;
+}
+
+.settings-page .btn-danger {
+	border: 1px solid #A5432E;
+	background: transparent;
+	color: #A5432E;
+}
+
+.settings-page .btn-danger:hover:not(:disabled) {
+	background: #A5432E;
+	color: #FAF8F4;
+}
+
+/* "Hozirgi parolni unutdingizmi?" havolasi */
+.settings-page .field-link {
+	display: inline-block;
+	margin-top: 0.4rem;
+	color: var(--terracotta);
+	font-size: 0.78rem;
+	text-decoration: none;
+}
+
+.settings-page .field-link:hover {
+	text-decoration: underline;
+}
+/* ---- Yozuvchi daromadi (Earnings) ---- */
+.settings-page .earn-stats {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 0.75rem;
+	margin: 0 0 1.25rem;
+}
+
+.settings-page .earn-stat {
+	padding: 0.75rem 0.9rem;
+	border: 1px solid var(--terracotta-soft);
+	border-radius: var(--radius);
+	background: rgba(181, 98, 46, 0.05);
+}
+
+.settings-page .earn-stat small {
+	display: block;
+	font-size: 0.68rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	opacity: 0.75;
+}
+
+.settings-page .earn-stat strong {
+	font-size: 1.05rem;
+}
+
+.settings-page .earn-sub {
+	margin: 1.5rem 0 0.5rem;
+	font-size: 0.9rem;
+}
+
+.settings-page .earn-table-wrap {
+	overflow-x: auto;
+}
+
+.settings-page .earn-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.8rem;
+}
+
+.settings-page .earn-table th,
+.settings-page .earn-table td {
+	padding: 0.45rem 0.5rem;
+	border-bottom: 1px solid var(--terracotta-soft);
+	text-align: left;
+	white-space: nowrap;
+}
+
+.settings-page .earn-table td.empty {
+	opacity: 0.7;
+	white-space: normal;
+}
+
+/* ---- 70/30 bo'linish: chiziq, misol, jami summalar ---- */
+.settings-page .split-visual {
+	margin: 0 0 1.25rem;
+}
+
+.settings-page .split-bar {
+	display: flex;
+	overflow: hidden;
+	border-radius: var(--radius);
+	font-size: 0.85rem;
+	font-weight: 600;
+	text-align: center;
+}
+
+.settings-page .split-seg {
+	min-width: 0;
+	padding: 0.7rem 0.5rem;
+	color: #fff;
+	white-space: nowrap;
+}
+
+.settings-page .split-seg--writer {
+	background: var(--terracotta);
+}
+
+.settings-page .split-seg--platform {
+	background: var(--espresso);
+}
+
+.settings-page .split-example {
+	margin: 0.6rem 0 0.75rem;
+	font-size: 0.85rem;
+}
+
+.settings-page .split-totals {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	gap: 0.75rem;
+}
+
+.settings-page .split-total {
+	padding: 0.6rem 0.9rem;
+	border: 1px solid var(--terracotta-soft);
+	border-radius: var(--radius);
+}
+
+.settings-page .split-total small {
+	display: block;
+	font-size: 0.68rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	opacity: 0.75;
+}
+
+.settings-page .split-total strong {
+	font-size: 1rem;
+}
+
+.settings-page .earn-table td.earn-mine {
+	color: var(--terracotta);
+	font-weight: 600;
+}
+
+.settings-page .earn-table td.earn-platform {
+	opacity: 0.8;
+}

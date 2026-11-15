@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kitoblar — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="layout"><aside class="sidebar" id="sidebar"></aside><main class="main" id="main"></main></div>
+<script src="js/roles.js"></script>
+<script src="js/admin-ui.js"></script>
+<script src="js/manuscripts.js"></script>
+<script>
+/* Saytdagi asarlar. Yangi asarlar bu yerga emas, «Tahririyat»ga tushadi va faqat tahrirchi tasdiqlagach saytga chiqadi.
+   Qoida buzilishi aniqlansa, asarni shu yerda yashirish mumkin. */
+const M = Manuscripts, ref = new WeakMap();
+M.boot(() => {
+const sums = M.works().map(w => ({ w, s: M.summary(w) }));
+const live = sums.filter(x => x.s.live > 0 || x.w.hidden);
+
+function build(w) {
+  const s = M.summary(w);
+  return [w.title, w.author, w.genre, String(s.live), w.hidden ? M.badge("hidden") : M.badge("published"), act];
+}
+const refresh = (row, draw) => { const f = ref.get(row), w = M.get(f.kind, f.id); if (w) row.splice(0, row.length, ...build(w)); draw(); };
+const view = f => { location.href = "manuscript.html?kind=" + f.kind + "&id=" + encodeURIComponent(f.id); };
+
+function act(r) {
+  const f = ref.get(r), w = M.get(f.kind, f.id); if (!w) return { text: "—" };
+  const btns = [{ text: "Ko'rish", kind: "primary", fn: () => view(f) }];
+  if (w.hidden) btns.push({ text: "Qayta ko'rsatish", fn: (row, d) => M.unhide(f.kind, f.id, () => refresh(row, d)) });
+  else btns.push({ text: "Yashirish", kind: "danger-o", fn: (row, d) => M.askHide(f.kind, f.id, () => refresh(row, d)) });
+  return { btns };
+}
+
+const rows = live.map(({ w }) => { const r = build(w); ref.set(r, { kind: w.kind, id: w.id }); return r; });
+const count = k => live.filter(x => x.w.kind === k && !x.w.hidden).length;
+
+Admin.page({ title: "Kitoblar", sub: "Saytdagi asarlar. Yangi asarlar «Tahririyat»dan o'tib keladi. Qoida buzilishi bo'lsa, asarni yashirish mumkin.", sections: [
+  { type: "stats", items: [["Kitoblar (saytda)", String(count("book"))], ["She'rlar (saytda)", String(count("poem"))],
+    ["Tahrir navbati", String(sums.reduce((n, x) => n + x.s.queue, 0)), "boblar tahrirchi kutmoqda"], ["Yashirilgan", String(live.filter(x => x.w.hidden).length)]] },
+  { type: "table", title: "Saytdagi asarlar", search: true, onRow: r => view(ref.get(r)),
+    cols: ["Asar", "Muallif", "Janr", { h: "Boblar (saytda)", mono: 1 }, "Holat", "Amal"], rows }
+] });
+});
+</script>
+</body>
+</html>

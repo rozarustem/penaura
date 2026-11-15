@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Book — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/manage-book.css">
+
+<body class="manage-book-page">
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+    <nav class="links">
+      <a href="index.html#discover">Discover</a>
+      <a href="fiction.html">Fiction</a>
+      <a href="poem.html">Poetry</a>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+    </nav>
+    <div class="nav-right">
+      <span class="search-link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Search</span>
+      <button class="btn-signin">Sign In</button>
+    </div>
+  </div>
+</header>
+
+<section class="section--no-top-border">
+  <div class="wrap">
+    <div id="book-not-found" style="display:none; text-align:center; padding:4rem 1.5rem; background:var(--card-bg); border-radius:var(--radius); border:1px dashed var(--line); margin-bottom:2rem;">
+      <h2 style="font-family:var(--font-display); font-size:1.6rem; margin-bottom:0.5rem;">Kitob topilmadi</h2>
+      <p style="color:var(--espresso-soft); margin-bottom:1.5rem;">Bunday nomli kitob mavjud emas yoki o'chirilgan bo'lishi mumkin.</p>
+      <a href="my-books.html" class="btn-primary" style="display:inline-flex; align-items:center; text-decoration:none;">&larr; Mening Kitoblarim</a>
+    </div>
+
+    <div id="book-content-wrapper">
+      <div class="book-header">
+        <div class="ph" id="manage-book-cover" style="background-size:cover; background-position:center;">cover</div>
+        <div>
+          <div class="genre" id="manage-book-genre">GENRE</div>
+          <h1 id="manage-book-title" style="margin: 0.3rem 0 0.5rem;">Book Title</h1>
+          <div class="sub-stats" id="manage-book-stats">0 chapters · 0 reads</div>
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-top:2rem;">
+        <h2>Chapters</h2>
+      </div>
+
+      <div id="chapters-list-container">
+        <!-- Dynamic chapters list -->
+      </div>
+
+      <dialog class="chapter-reader-dialog" id="chapter-reader-dialog" aria-labelledby="reader-chapter-title">
+        <div class="chapter-reader-shell">
+          <header class="chapter-reader-header">
+            <div>
+              <p class="chapter-reader-book" id="reader-book-title"></p>
+              <span class="chapter-reader-counter" id="reader-chapter-counter"></span>
+            </div>
+            <button type="button" class="chapter-reader-close" id="btn-reader-close" aria-label="Close reading preview">Close</button>
+          </header>
+          <main class="chapter-reader-main">
+            <h2 id="reader-chapter-title"></h2>
+            <article class="chapter-reader-content" id="reader-chapter-content"></article>
+          </main>
+          <nav class="chapter-reader-navigation" aria-label="Chapter navigation">
+            <button type="button" id="btn-reader-previous">← Previous chapter</button>
+            <span id="reader-chapter-position"></span>
+            <button type="button" id="btn-reader-next">Next chapter →</button>
+          </nav>
+        </div>
+      </dialog>
+
+                        <div class="add-chapter-box" style="margin-top:2.5rem; background:var(--card-bg, #F1EBDF); border:1px solid var(--line, #E4DDD0); border-radius:var(--radius, 0.25rem); padding:2rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem;">
+          <h3 style="margin:0; font-family:var(--font-display, serif); font-size:1.35rem; color:var(--espresso, #2C1810);">+ Yangi bob qo'shish</h3>
+          
+          <!-- Mode Tabs -->
+          <div class="import-tabs" style="display:inline-flex; background:var(--cream, #FAF8F4); border:1px solid var(--line, #E4DDD0); border-radius:var(--radius, 4px); padding:3px; gap:3px;">
+            <button type="button" class="tab-btn active" data-tab="manual" style="padding:0.5rem 1rem; font-family:var(--font-mono, monospace); font-size:0.82rem; border:none; background:var(--espresso, #2C1810); color:var(--cream, #FAF8F4); border-radius:3px; cursor:pointer; font-weight:600; transition:all 0.2s;">✍️ Qo'lda yozish</button>
+            <button type="button" class="tab-btn" data-tab="file" style="padding:0.5rem 1rem; font-family:var(--font-mono, monospace); font-size:0.82rem; border:none; background:transparent; color:var(--espresso-soft, #4A3226); border-radius:3px; cursor:pointer; font-weight:600; transition:all 0.2s;">📁 Docs / Word yuklash</button>
+            <button type="button" class="tab-btn" data-tab="gdocs" style="padding:0.5rem 1rem; font-family:var(--font-mono, monospace); font-size:0.82rem; border:none; background:transparent; color:var(--espresso-soft, #4A3226); border-radius:3px; cursor:pointer; font-weight:600; transition:all 0.2s;">🌐 Google Docs</button>
+          </div>
+        </div>
+
+        <div id="chapter-alert" style="display:none; padding:0.85rem 1.2rem; border-radius:var(--radius, 4px); margin:1rem 0; font-size:0.9rem; font-weight:500;"></div>
+
+        <!-- TAB 2: File Upload Zone -->
+        <div id="tab-content-file" class="tab-panel" style="display:none; margin-bottom:1.5rem;">
+          <div id="chapter-dropzone" style="border:2px dashed var(--terracotta, #B5622E); border-radius:var(--radius, 6px); background:var(--cream, #FAF8F4); padding:2.5rem 1.5rem; text-align:center; cursor:pointer; transition:all 0.2s ease;">
+            <input type="file" id="chapter-file-input" accept=".docx,.doc,.txt,.md,.rtf,.html" style="display:none;" />
+            <div style="font-size:2.8rem; margin-bottom:0.6rem;">📄</div>
+            <div style="font-family:var(--font-display, serif); font-size:1.2rem; font-weight:700; color:var(--espresso, #2C1810); margin-bottom:0.4rem;">Word (.docx), Matn (.txt, .md) faylni bu yerga tashlang</div>
+            <p style="font-size:0.88rem; color:var(--espresso-soft, #4A3226); margin:0 0 1.2rem;">yoki kompyuteringizdan tanlang. Bob sarlavhasi va matni avtomatik o'qib olinadi.</p>
+            <button type="button" id="btn-browse-file" style="background:var(--terracotta, #B5622E); color:#FAF8F4; border:none; padding:0.6rem 1.4rem; border-radius:var(--radius, 4px); font-family:var(--font-mono, monospace); font-size:0.85rem; font-weight:600; cursor:pointer; box-shadow:0 2px 6px rgba(181,98,46,0.3);">Faylni tanlash 📁</button>
+          </div>
+          <div id="file-loaded-badge" style="display:none; margin-top:0.9rem; padding:0.85rem 1.1rem; background:#E8F5E9; border:1px solid #A5D6A7; border-radius:var(--radius, 4px); font-size:0.88rem; color:#2E7D32; justify-content:space-between; align-items:center;">
+            <span id="file-loaded-info" style="font-weight:600;">✓ Fayl yuklandi</span>
+            <button type="button" id="btn-clear-file" style="background:transparent; border:none; color:#C62828; cursor:pointer; font-weight:700; font-size:0.85rem; padding:0.2rem 0.5rem;">✕ Bekor qilish</button>
+          </div>
+        </div>
+
+        <!-- TAB 3: Google Docs Import Zone -->
+        <div id="tab-content-gdocs" class="tab-panel" style="display:none; margin-bottom:1.5rem; background:var(--cream, #FAF8F4); border:1px solid var(--line, #E4DDD0); border-radius:var(--radius, 6px); padding:1.6rem;">
+          <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.8rem;">
+            <span style="font-size:1.5rem;">🌐</span>
+            <span style="font-family:var(--font-display, serif); font-weight:700; font-size:1.15rem; color:var(--espresso, #2C1810);">Google Docs havolasidan import qilish</span>
+          </div>
+          <p style="font-size:0.88rem; color:var(--espresso-soft, #4A3226); margin-bottom:1rem; line-height:1.5;">
+            Google Docs hujjatingiz havolasini kiriting (hujjatda <em>"Anyone with the link can view"</em> ochiq bo'lishi kerak):
+          </p>
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:1rem;">
+            <input type="url" id="gdocs-url-input" placeholder="https://docs.google.com/document/d/..." style="flex:1; min-width:260px; padding:0.8rem 1.1rem; border:1px solid var(--line, #E4DDD0); border-radius:var(--radius, 4px); background:#FAF8F4; font-size:0.92rem;" />
+            <button type="button" id="btn-import-gdocs" style="padding:0.8rem 1.5rem; background:var(--espresso, #2C1810); color:var(--cream, #FAF8F4); border:none; border-radius:var(--radius, 4px); font-family:var(--font-mono, monospace); font-size:0.88rem; cursor:pointer; font-weight:600;">📥 Import qilish</button>
+          </div>
+          <div style="font-size:0.82rem; color:var(--espresso-soft, #4A3226); line-height:1.5; border-top:1px dashed var(--line, #E4DDD0); padding-top:0.9rem;">
+            💡 <strong>Tavsiya qilinadigan eng tez usul:</strong> Google Docs'da <em>Fayl → Yuklab olish → Microsoft Word (.docx)</em> qilib, yuqoridagi <strong>"Docs / Word yuklash"</strong> bo'limiga tashlasangiz, 1 soniyada butun matn tahrirlagichga tushadi!
+          </div>
+        </div>
+
+        <!-- Form fields -->
+        <div class="form-group">
+          <label for="new-chapter-title">BOB NOMI / CHAPTER TITLE <span style="color:var(--terracotta);">*</span></label>
+          <input type="text" id="new-chapter-title" placeholder="masalan, 1-bob. Dashtdan o'tish" required>
+        </div>
+
+        <div class="form-group">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+            <label for="new-chapter-content" style="margin-bottom:0;">BOB MATNI / INITIAL CONTENT <span style="opacity:0.6; font-weight:normal;">(ixtiyoriy, keyinroq to'liq tahrirlashingiz mumkin)</span></label>
+            <span id="chapter-words-counter" style="font-family:var(--font-mono, monospace); font-size:0.8rem; color:var(--espresso-soft, #4A3226); font-weight:600; background:rgba(0,0,0,0.05); padding:0.2rem 0.6rem; border-radius:3px;">0 so'z</span>
+          </div>
+          <textarea id="new-chapter-content" rows="12" placeholder="Bob matnini shu yerga yozing, fayl yuklang yoki Google Docs'dan import qiling..."></textarea>
+        </div>
+
+        <div class="radio-row" style="margin: 1.4rem 0;">
+          <label class="radio-option">
+            <input type="radio" id="ch-type-free" name="ch-premium" value="false" checked>
+            📖 Bepul bob (Free Chapter)
+          </label>
+          <label class="radio-option">
+            <input type="radio" id="ch-type-premium" name="ch-premium" value="true">
+            ⭐ Premium bob (Tangalar evaziga)
+          </label>
+        </div>
+
+        <div style="display:flex; gap:0.9rem; flex-wrap:wrap;">
+          <button type="button" id="btn-add-chapter" class="btn-publish" style="flex:1; margin-bottom:0; font-size:0.95rem; font-weight:600;">Bob qo'shish →</button>
+          <button type="button" id="btn-add-and-edit-chapter" class="btn-save-draft" style="flex:1; margin-bottom:0; background:var(--cream, #FAF8F4); color:var(--espresso, #2C1810); font-weight:600; font-size:0.95rem;">Qo'shish va Tahrirlashga o'tish ↗</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="newsletter">
+  <div class="eyebrow">STAY LITERARY</div>
+  <h2>Get Stories Worth Reading Straight to Your Inbox</h2>
+  <p>Subscribe to our weekly digest — curated fiction, poetry, and essays from Penaura's best writers. No noise, just literature.</p>
+  <div class="subscribe-row">
+    <input type="email" placeholder="Your email address">
+    <button>Subscribe</button>
+  </div>
+  <div class="fine">Subscribe and read our <a href="about.html">Privacy Policy</a>.</div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+      <p>A home for writers and the readers who love them.</p>
+      <div class="social-row">
+        <span>Fb</span><span>Tw</span><span>Ig</span><span>Yt</span>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>DISCOVER</h4>
+      <a href="fiction.html">Fiction</a><a href="poem.html">Poetry</a><a href="index.html#discover">Essays</a><a href="index.html#discover">Non-fiction</a>
+    </div>
+    <div class="footer-col">
+      <h4>WRITERS</h4>
+      <a href="upload.html">Start Writing</a><a href="blog.html">Writer Tips</a><a href="blog.html">Publishing Guide</a><a href="blog.html">Workshops</a>
+    </div>
+    <div class="footer-col">
+      <h4>TOP GENRES</h4>
+      <a href="fiction.html?sub=literary">Literary Fiction</a><a href="index.html#discover">Romance</a><a href="index.html#discover">Mystery</a><a href="index.html#discover">Sci-Fi</a>
+    </div>
+    <div class="footer-col">
+      <h4>HELP</h4>
+      <a href="about.html">About Penaura</a><a href="about.html">Careers</a><a href="about.html">Contact</a><a href="about.html">Terms</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Penaura. All rights reserved.</span>
+    <span>Where every word finds its reader.</span>
+  </div>
+</footer>
+
+<script src="js/mammoth.browser.min.js"></script>
+<script src="js/doc-importer.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/api-client.js"></script>
+<script src="js/dom-utils.js"></script>
+<script src="js/auth-nav.js"></script>
+<script src="js/manage-book.js"></script>
+</body>
+</html>

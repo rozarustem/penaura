@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile — Penaura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/reader_profil.css">
+</head>
+<body class="reader-page">
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+    <nav class="links">
+      <a href="index.html#discover">Discover</a>
+      <a href="fiction.html">Fiction</a>
+      <a href="poem.html">Poetry</a>
+      <a href="blog.html">Blog</a>
+      <a href="about.html">About</a>
+    </nav>
+    <div class="nav-right">
+      <span class="search-link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Search</span>
+      <button class="btn-signin">Sign In</button>
+    </div>
+  </div>
+</header>
+
+<section class="section--no-top-border">
+  <div class="wrap">
+    <div class="settings-link-row">
+      <a href="settings.html">⚙ Settings</a>
+    </div>
+    <div class="profile-header">
+      <div class="profile-avatar"></div>
+      <div class="profile-info">
+        <h2></h2>
+        <span class="role-badge">📖 READER</span>
+      </div>
+    </div>
+
+    <div class="coin-widget">
+      <div class="coin-widget-left">
+        <div class="coin-icon"><img src="images/penaura-coin.png" alt="Penaura coin"></div>
+        <div>
+          <div class="num">— coins</div>
+          <div class="label">AVAILABLE BALANCE</div>
+        </div>
+      </div>
+      <button class="btn-buy-coins" type="button">Buy Coins →</button>
+    </div>
+
+    <div class="profile-stats-grid">
+      <div class="profile-stat-card">
+        <div class="num" id="stat-started">—</div>
+        <div class="label">BOOKS STARTED</div>
+      </div>
+      <div class="profile-stat-card">
+        <div class="num" id="stat-following">—</div>
+        <div class="label">WRITERS FOLLOWED</div>
+      </div>
+      <div class="profile-stat-card">
+        <div class="num" id="stat-unlocked">—</div>
+        <div class="label">CHAPTERS UNLOCKED</div>
+      </div>
+      <div class="profile-stat-card">
+        <div class="num" id="stat-joined">—</div>
+        <div class="label">MEMBER SINCE</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section--flush-top">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Currently Reading</h2>
+      <a class="see-all" href="index.html#discover">Browse more →</a>
+    </div>
+    <div class="reading-grid" id="reading-grid">
+      <p class="empty-note">Yuklanmoqda…</p>
+    </div>
+  </div>
+</section>
+
+<section class="section--flush-top">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Writers You Follow</h2>
+      <a class="see-all" href="fiction.html">Discover writers →</a>
+    </div>
+    <div class="following-grid" id="following-grid">
+      <p class="empty-note">Yuklanmoqda…</p>
+    </div>
+  </div>
+</section>
+
+<div class="newsletter">
+  <div class="eyebrow">STAY LITERARY</div>
+  <h2>Get Stories Worth Reading Straight to Your Inbox</h2>
+  <p>Subscribe to our weekly digest — curated fiction, poetry, and essays from Penaura's best writers. No noise, just literature.</p>
+  <div class="subscribe-row">
+    <input type="email" placeholder="Your email address">
+    <button>Subscribe</button>
+  </div>
+  <div class="fine">Subscribe and read our <a href="about.html">Privacy Policy</a>.</div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo"><img src="images/penaura-logo.png" alt="Penaura logo"> Penaura</div>
+      <p>A home for writers and the readers who love them.</p>
+      <div class="social-row">
+        <span>Fb</span><span>Tw</span><span>Ig</span><span>Yt</span>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>DISCOVER</h4>
+      <a href="fiction.html">Fiction</a><a href="poem.html">Poetry</a><a href="index.html#discover">Essays</a><a href="index.html#discover">Non-fiction</a>
+    </div>
+    <div class="footer-col">
+      <h4>WRITERS</h4>
+      <a href="upload.html">Start Writing</a><a href="blog.html">Writer Tips</a><a href="blog.html">Publishing Guide</a><a href="blog.html">Workshops</a>
+    </div>
+    <div class="footer-col">
+      <h4>TOP GENRES</h4>
+      <a href="fiction.html?sub=literary">Literary Fiction</a><a href="index.html#discover">Romance</a><a href="index.html#discover">Mystery</a><a href="index.html#discover">Sci-Fi</a>
+    </div>
+    <div class="footer-col">
+      <h4>HELP</h4>
+      <a href="about.html">About Penaura</a><a href="about.html">Careers</a><a href="about.html">Contact</a><a href="about.html">Terms</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Penaura. All rights reserved.</span>
+    <span>Where every word finds its reader.</span>
+  </div>
+</footer>
+
+<script src="js/storage.js"></script>
+<script src="js/api-client.js"></script>
+<script src="js/dom-utils.js"></script>
+<script src="js/auth-nav.js"></script>
+<script src="js/reader-profile.js"></script>
+</body>
+</html>

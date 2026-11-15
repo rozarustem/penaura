@@ -1,0 +1,112 @@
+.reader-page .section--flush-top {
+	padding-top: 0;
+}
+
+/* ---- API bilan ishlaydigan profil: avatar, kitob muqovasi, kuzatilayotgan yozuvchilar ---- */
+.reader-page .avatar-img,
+.reader-page .reading-cover {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.reader-page .reading-item .ph {
+	overflow: hidden;
+}
+
+.reader-page a.btn-continue {
+	display: inline-block;
+	text-decoration: none;
+}
+
+.reader-page .empty-note {
+	grid-column: 1 / -1;
+	margin: 0;
+	color: var(--espresso-soft);
+	font-size: 0.85rem;
+}
+
+.reader-page .empty-note a {
+	color: var(--terracotta);
+}
+
+.reader-page .following-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.75rem;
+}
+
+.reader-page .following-card {
+	display: grid;
+	grid-template-columns: 44px minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 0.7rem;
+	min-width: 0;
+	padding: 0.75rem;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	background: var(--card-bg);
+}
+
+.reader-page .following-avatar {
+	width: 44px;
+	height: 44px;
+	overflow: hidden;
+	border-radius: 50%;
+	background: var(--terracotta-soft);
+}
+
+.reader-page .following-avatar .profile-avatar-initial {
+	font-size: 1.1rem;
+}
+
+.reader-page .following-info {
+	min-width: 0;
+}
+
+.reader-page .following-name {
+	display: block;
+	overflow: hidden;
+	color: var(--espresso);
+	font-family: var(--font-display);
+	font-size: 0.9rem;
+	font-weight: 700;
+	text-decoration: none;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.reader-page .following-meta {
+	color: var(--espresso-soft);
+	font-family: var(--font-mono);
+	font-size: 0.6rem;
+}
+
+.reader-page .btn-unfollow {
+	padding: 0.38rem 0.65rem;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	background: transparent;
+	color: var(--espresso);
+	cursor: pointer;
+	font-family: var(--font-mono);
+	font-size: 0.65rem;
+}
+
+.reader-page .btn-unfollow:disabled {
+	cursor: wait;
+	opacity: 0.5;
+}
+
+@media (max-width: 900px) {
+	.reader-page .following-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 560px) {
+	.reader-page .following-grid {
+		grid-template-columns: 1fr;
+	}
+}

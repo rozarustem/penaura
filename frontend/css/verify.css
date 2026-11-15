@@ -1,0 +1,62 @@
+/* Email tasdiqlash sahifasi (verify.html) */
+.signin-page .otp-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.signin-page .otp-row input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--cream);
+  color: var(--espresso);
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.signin-page .otp-row input:focus {
+  outline: 2px solid var(--terracotta-soft);
+  outline-offset: 1px;
+}
+
+.signin-page .email-highlight {
+  color: var(--espresso);
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.signin-page .link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--terracotta);
+  cursor: pointer;
+  font: inherit;
+  text-decoration: underline;
+}
+
+.signin-page .link-button:disabled {
+  color: var(--espresso-soft);
+  cursor: default;
+  text-decoration: none;
+}
+
+.signin-page .btn-auth-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+@media (max-width: 560px) {
+  .signin-page .otp-row {
+    gap: 0.35rem;
+  }
+
+  .signin-page .otp-row input {
+    font-size: 1.1rem;
+  }
+}
