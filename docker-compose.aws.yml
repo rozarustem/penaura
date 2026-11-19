@@ -1,0 +1,62 @@
+# AWS (ALB + Auto Scaling) uchun. Har bir EC2 nusxasi shuni ishga tushiradi:
+#   docker compose -f docker-compose.aws.yml up -d --build
+#
+# Farqi docker-compose.prod.yml dan:
+#   - Postgres konteyneri YO'Q: baza Amazon RDS da (DB_HOST .env dan)
+#   - Media fayllar Amazon S3 da (AWS_STORAGE_BUCKET_NAME), diskda emas
+#   - HTTPS ni ALB (ACM sertifikati) tugatadi; Caddy faqat 80-portda HTTP
+#   - Maxfiy qiymatlar gitda emas: instans ishga tushganda SSM Parameter Store dan .env ga yoziladi
+#
+# Kerakli fayllar (user-data yaratadi):
+#   .env                      -> DOMAIN, DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, AWS_STORAGE_BUCKET_NAME
+#   backend/.env.production   -> SECRET_KEY, EMAIL_*, DEMO_MODE va h.k.
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    logging: *default-logging
+    env_file: ./backend/.env.production
+    environment:
+      DEBUG: "False"
+      DB_NAME: ${DB_NAME:-penaura}
+      DB_USER: ${DB_USER:-penaura_user}
+      DB_PASSWORD: ${DB_PASSWORD:?.env faylda DB_PASSWORD yozing}
+      DB_HOST: ${DB_HOST:?.env faylda DB_HOST (RDS endpoint) yozing}
+      DB_PORT: "5432"
+      AWS_STORAGE_BUCKET_NAME: ${AWS_STORAGE_BUCKET_NAME:?.env faylda bucket nomini yozing}
+      AWS_S3_REGION_NAME: ${AWS_S3_REGION_NAME:-ap-southeast-2}
+      ALLOWED_HOSTS: ${DOMAIN:?.env faylda DOMAIN yozing},admin.${DOMAIN},www.${DOMAIN},backend,localhost,${ALLOWED_EXTRA_HOSTS:-}
+      CORS_ALLOWED_ORIGINS: https://${DOMAIN},https://admin.${DOMAIN}
+      CSRF_TRUSTED_ORIGINS: https://${DOMAIN},https://admin.${DOMAIN}
+      FRONTEND_URL: https://${DOMAIN}/
+      BEHIND_PROXY: "True"
+    volumes:
+      - static_data:/app/staticfiles
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    logging: *default-logging
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    volumes:
+      - ./Caddyfile.aws:/etc/caddy/Caddyfile:ro
+      - ./frontend:/srv/frontend:ro
+      - ./admin:/srv/admin:ro
+      - static_data:/srv/static:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  static_data:
+  caddy_data:
+  caddy_config:
