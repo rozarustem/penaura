@@ -4,6 +4,11 @@
 {
   auto_https off
   admin off
+  # ALB (VPC ichki tarmog'i) ishonchli proksi: X-Forwarded-Proto/For sarlavhalari saqlansin,
+  # aks holda Django har doim "http" ko'rib, https ga cheksiz yo'naltiradi.
+  servers {
+    trusted_proxies static private_ranges
+  }
 }
 
 (common) {
