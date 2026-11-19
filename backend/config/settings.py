@@ -109,6 +109,21 @@ STATIC_ROOT = BASE_DIR / "staticfiles"  # python manage.py collectstatic shu yer
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Amazon S3: AWS_STORAGE_BUCKET_NAME berilsa, yuklangan fayllar (muqova, avatar) S3 da saqlanadi.
+# Kalitlar kodda/.env da YO'Q: EC2 ga biriktirilgan IAM rol orqali avtomatik olinadi.
+# Berilmasa (lokal ishlash) fayllar diskdagi media/ papkasida qoladi.
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "")
+if AWS_STORAGE_BUCKET_NAME:
+    AWS_S3_REGION_NAME = os.environ.get("AWS_S3_REGION_NAME", "ap-southeast-2")
+    AWS_DEFAULT_ACL = None
+    AWS_QUERYSTRING_AUTH = True        # bucket yopiq; fayllar vaqtinchalik imzolangan URL bilan beriladi
+    AWS_QUERYSTRING_EXPIRE = 3600
+    AWS_S3_FILE_OVERWRITE = False
+    STORAGES = {
+        "default": {"BACKEND": "storages.backends.s3.S3Storage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Frontend va admin panel joylashgan domenlar (.env: CORS_ALLOWED_ORIGINS=https://penaura.uz,https://admin.penaura.uz)
