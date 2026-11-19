@@ -54,6 +54,20 @@ jobs:
           done
           exit $fail
 
+  # AWS Auto Scaling serverlari uchun: testlar o'tgach 'deploy' branch'i shu commit'ga suriladi.
+  # Serverlar (cron, scripts/aws-update.sh) 'deploy' ni kuzatib, o'zlarini yangilaydi.
+  release:
+    name: AWS uchun release (deploy branch)
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: deploy branch'ini yangilash
+        run: git push --force origin "${GITHUB_SHA}:refs/heads/deploy"
+
   deploy:
     name: Serverga deploy
     needs: test
